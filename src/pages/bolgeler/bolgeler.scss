@@ -1,0 +1,42 @@
+.main-div {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    flex-flow: wrap;
+    margin: 10px;
+}
+
+.card {
+    width: 150px;
+    height: 100px;
+    background-color: #ffff;
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.card-content {
+    align-self: center
+}
+
+.tabs {
+    width: 100%;
+    height: 100%;
+}
+
+.contant-header {
+    width: 100%;
+    height: 50px;
+    background-color: #ffff;
+    border-bottom-style: solid;
+    border-width: 1px;
+    padding: 15px;
+}
+
+.header {
+    font-size: large;
+}
