@@ -22,9 +22,9 @@ export default function SideNavOuterToolbar({ title, children }: React.PropsWith
   const [menuStatus, setMenuStatus] = useState(
     isLarge ? MenuStatus.Opened : MenuStatus.Closed
   );
-  const { opend } = useSideNav();
   const { navigationData } = useNavigation();
-  const { trigger } = useSideNav();
+  const { trigger, opend } = useSideNav();
+  const drawerRef: any = useRef(null)
 
   const toggleMenu = useCallback(({ event }: ButtonTypes.ClickEvent) => {
     setMenuStatus(
@@ -68,11 +68,12 @@ export default function SideNavOuterToolbar({ title, children }: React.PropsWith
   }, [navigate, menuStatus, isLarge]);
 
   useEffect(() => {
+    console.log(navigationData.currentPath);
+
     if (trigger)
       if (navigationData.currentPath === "/masa") {
         trigger(false)
-      } else {
-        trigger(true);
+        drawerRef.current?.instance.option('minSize', 0);
       }
     if (opend) {
       setMenuStatus(MenuStatus.Opened);
@@ -92,11 +93,12 @@ export default function SideNavOuterToolbar({ title, children }: React.PropsWith
         closeOnOutsideClick={onOutsideClick}
         openedStateMode={isLarge ? 'shrink' : 'overlap'}
         revealMode={isXSmall ? 'slide' : 'expand'}
-        minSize={0}
+        minSize={isXSmall ? 0 : 60}
         maxSize={250}
         shading={isLarge ? false : true}
         opened={menuStatus === MenuStatus.Closed ? false : true}
         template={'menu'}
+        ref={drawerRef}
       >
         <div className={'container'}>
           <ScrollView ref={scrollViewRef} className={'layout-body with-footer'}>

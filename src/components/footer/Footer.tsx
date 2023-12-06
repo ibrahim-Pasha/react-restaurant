@@ -11,7 +11,7 @@ export default ({ ...rest }) => {
     if (navigationData.currentPath === "/masa") {
       trigger(false);
     } else {
-      trigger(true);
+      trigger(false);
     }
   }
   if (displayed) { return <footer className={"footer"} {...rest} />; }

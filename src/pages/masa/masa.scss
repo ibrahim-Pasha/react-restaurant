@@ -1,3 +1,7 @@
+button {
+    cursor: pointer;
+}
+
 .all-contant {
     display: flex;
     flex-flow: column;
@@ -44,7 +48,6 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
     width: 30%;
     background-color: white;
     box-shadow: 10px 10px 5px rgb(175, 175, 175);
@@ -102,9 +105,9 @@
 
 .save-btn {
     width: 75%;
-    border-width: 0px;
     background-color: #e32b2b;
     color: white;
+    border-width: 0px;
     font-size: large;
     border-radius: 5px;
 }
@@ -133,9 +136,8 @@
 
 .selected-product {
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
     margin: 10px;
-    border-bottom: ridge;
 }
 
 .products-detales {
@@ -144,6 +146,8 @@
     justify-content: space-between;
     width: 100%;
     align-items: center;
+    border-bottom: ridge;
+
 }
 
 .product-count {
@@ -182,4 +186,18 @@
     width: 35%;
     align-items: center;
 
+}
+
+.basket-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.pey-button {
+    width: 25%;
+    background-color: rgb(76, 175, 76);
+    color: white;
+    border-width: 0px;
+    font-size: medium;
+    border-radius: 5px;
 }

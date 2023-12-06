@@ -43,4 +43,5 @@ export default function Header({ menuToggleEnabled, title, toggleMenu }: HeaderP
         </Template>
       </Toolbar>
     </header>
-)}
+  )
+}
