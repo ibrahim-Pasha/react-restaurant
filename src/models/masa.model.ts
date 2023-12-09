@@ -10,5 +10,5 @@ export class Masa {
     m_tarih: string;
     iptal: number;
     MasaTutar: number;
-    SonSiparisTarih: string
+    SonSiparisTarih: string;
 }

@@ -1,5 +1,6 @@
 export class Product {
-    id: number;
-    name: string;
-    price: number;
+    grup_koduS: string;
+    stok_adi_kisa: string;
+    satis_fiyat: number;
+    stokno: number;
 }

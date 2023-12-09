@@ -1,4 +1,9 @@
 export class Bolum {
-    bolumno: number;
-    bolum_adi: string;
+    Message?: string;
+    Data: {
+        bolumno: number;
+        bolum_adi: string;
+    }[];
+    IsSuccess?: boolean;
+
 }

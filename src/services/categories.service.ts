@@ -7,10 +7,10 @@ const headers = {
     'kno': '1',
 };
 const getAll = (): Promise<ReqData> => {
-    let result$ = AxiosService.get<ReqData>(`https://ravi-mobil-demo.petekyazilim.com.tr/staj/get-bolum-liste`, { headers: headers });
+    let result$ = AxiosService.get<ReqData>(`https://ravi-mobil-demo.petekyazilim.com.tr/ravi-res/get-hizli-satis-grup-liste`, { headers: headers });
     return result$;
 };
 
-export const BolumService = {
+export const CategoriesService = {
     getAll,
 };

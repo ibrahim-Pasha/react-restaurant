@@ -7,20 +7,19 @@
 }
 
 .card {
-    width: 150px;
-    height: 100px;
-    background-color: #ffff;
+    width: 13% !important;
+    height: 150px !important;
+    background-color: rgb(40, 160, 207) !important;
+    color: #ffff;
 }
 
 .card-content {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100%;
-}
-
-.card-content {
-    align-self: center
+    height: 85%;
+    align-self: center;
+    width: 298px;
 }
 
 .tabs {
@@ -39,4 +38,24 @@
 
 .header {
     font-size: large;
+}
+
+.card-footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.card-header {
+    color: rgb(255, 0, 0);
+    font-weight: 600;
+    font-size: large;
+    height: 20px;
+    background-color: #ffff;
+    align-self: center;
+    width: 96px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 5px;
 }

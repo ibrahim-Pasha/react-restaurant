@@ -50,7 +50,7 @@ button {
     justify-content: space-between;
     width: 30%;
     background-color: white;
-    box-shadow: 10px 10px 5px rgb(175, 175, 175);
+    box-shadow: 2px 2px 5px rgb(175, 175, 175);
 }
 
 .cat-pro {
@@ -113,11 +113,15 @@ button {
 }
 
 .card {
-    width: 150px;
-    height: 100px;
+    width: 18% !important;
+    height: 120px !important;
     background-color: #ffff;
     border-width: 0;
     border-radius: 10px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .products {
@@ -132,6 +136,7 @@ button {
     display: flex;
     flex-flow: column;
     width: 50;
+
 }
 
 .selected-product {
@@ -147,29 +152,32 @@ button {
     width: 100%;
     align-items: center;
     border-bottom: ridge;
-
+    padding: 15px;
 }
 
 .product-count {
     text-align: center;
     background-color: rgb(240, 240, 255);
     height: 30px;
+    color: #e32b2b;
 }
 
 .plus-minus-btn {
     background-color: #ffffff;
     border-style: groove;
-    height: 40px;
-    width: 45px;
+    height: 45px;
+    width: 40px;
     border-radius: 5px;
     border-color: #fcfcfc;
+    border: 1px solid rgba(216, 215, 215, 0.5);
 }
 
 .selected-product-name {
     color: #e32b2b;
     margin: 10px;
-    font-size: large;
+    font-size: small;
     justify-self: center;
+    font-weight: 500;
 }
 
 .product-det1 {
@@ -194,10 +202,34 @@ button {
 }
 
 .pey-button {
-    width: 25%;
+    width: 50%;
+
     background-color: rgb(76, 175, 76);
     color: white;
     border-width: 0px;
     font-size: medium;
     border-radius: 5px;
+    margin: 0px 5px 0px 5px;
+}
+
+.fast-pey-button {
+    width: 50%;
+    background-color: rgb(243, 243, 243);
+    color: gold;
+    border-width: 0px;
+    font-size: medium;
+    border-radius: 5px;
+    margin: 0px 5px 0px 0px;
+    font-weight: 700;
+}
+
+.cat-tab-panel {
+    box-shadow: 5px 5px 5px 5px rgb(175, 175, 175) !important;
+
+}
+
+.pey-buttons {
+    display: flex;
+    flex-direction: row;
+    width: 600px;
 }

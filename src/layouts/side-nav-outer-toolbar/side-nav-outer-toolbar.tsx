@@ -75,6 +75,10 @@ export default function SideNavOuterToolbar({ title, children }: React.PropsWith
         trigger(false)
         drawerRef.current?.instance.option('minSize', 0);
       }
+      else if (navigationData.currentPath === "/bolgeler") {
+        trigger(true)
+        drawerRef.current?.instance.option('minSize', 60);
+      }
     if (opend) {
       setMenuStatus(MenuStatus.Opened);
     } else setMenuStatus(MenuStatus.Closed);
