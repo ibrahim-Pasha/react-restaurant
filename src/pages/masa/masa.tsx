@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './masa.scss'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowUp, faBolt, faCalendar, faEllipsisVertical, faMinus, faNotesMedical, faPlus, faTag, faTrash, faUser, faUserGroup } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowUp, faBolt, faCalendar, faEllipsisVertical, faMinus, faNotesMedical, faPlus, faPrint, faTag, faTrash, faUser, faUserGroup } from '@fortawesome/free-solid-svg-icons'
 import { useLocation, useNavigate } from 'react-router-dom';
 import TabPanel, { Item } from "devextreme-react/tab-panel";
 import { useNavigation } from '../../contexts/navigation';
@@ -9,10 +9,7 @@ import { Categories, Product } from '../../models';
 import { Masa as masaModel } from '../../models';
 import { CategoriesService, MasaService, ProductsService, SearchService } from '../../services';
 import Popup, { Position, ToolbarItem } from 'devextreme-react/popup';
-interface SelectedProduct {
-    count: number;
-    product: Product;
-}
+import { SelectBox } from 'devextreme-react/select-box';
 
 export default function Masa(props: any) {
     const { setNavigationData } = useNavigation();
@@ -30,31 +27,30 @@ export default function Masa(props: any) {
     const [grupKodu, setGrupKodu] = useState("01")
     const productDetRef: any = useRef(null)
     const [searchText, setSearchText] = useState('')
-
-    const handleSave = () => {
+    const [selectedProductDet, setSelectedProductDet] = useState<SelectedProduct>()
+    const [title, setTitle] = useState('')
+    const [fastPayTitle, setFastPayTitle] = useState('')
+    const payTypes = ['Öde', 'Öde & Yazdır']
+    const fastPayRef: any = useRef(null)
+    const save = () => {
         navigate('/bolgeler', { state: { masano: tables?.masano } })
     }
     const calculateTotal = (value: SelectedProduct[]) => {
         const pricesInBasket = value.map((product) => (product.count) * product.product.satis_fiyat)
         setTotalPrice(pricesInBasket.reduce((accumulator, currentValue) => accumulator + currentValue, 0))
     }
-    const addToBasket = (id: number) => {
-        const productInBasket = productsInBasket.find((p) => p.product.stokno === id);
-        if (productInBasket) {
-            productInBasket.count++;
-            const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-            setProductsInBasket(allProductsInBasket);
-        } else {
-            const clickedProdcut = products.find((p) => p.stokno === id);
-            if (productsInBasket && clickedProdcut) {
-                const allProductsInBasket: SelectedProduct[] = [
+    const addToBasket = (product: SelectedProduct) => {
 
-                    ...productsInBasket,
-                    { count: 1, product: clickedProdcut },
-                ];
-                setProductsInBasket(allProductsInBasket);
-            }
+        const clickedProdcut = product
+        if (productsInBasket && clickedProdcut) {
+            const allProductsInBasket: SelectedProduct[] = [
+
+                ...productsInBasket,
+                clickedProdcut
+            ];
+            setProductsInBasket(allProductsInBasket);
         }
+
     }
     const removeFromBasket = (id: number) => {
         const productInBasket = productsInBasket.find((p) => parseInt(p.product.grup_koduS) === id);
@@ -80,14 +76,17 @@ export default function Masa(props: any) {
             if (selectedGrupKod) { setGrupKodu(selectedGrupKod) }
         }
     }
-    console.log(filtredProducts);
-
+    const onclickProduct = (product: Product) => {
+        const BasketProduct: SelectedProduct = { product: product, count: 1 }
+        handleOrderDet(BasketProduct)
+    }
     const returnProducts = () => {
         if (filtredProducts) {
             return (
                 <div className='products'>
                     {filtredProducts.map(product => (
-                        <button className='card' onClick={() => addToBasket(product.stokno)}>
+
+                        <button className='card' onClick={() => onclickProduct(product)}>
 
                             <span>{product.stok_adi_kisa}</span>
                             <span>₺ {product.satis_fiyat}</span>
@@ -96,32 +95,151 @@ export default function Masa(props: any) {
                 </div>)
         }
         else
-            return (<div className='categories'>
-                <TabPanel onSelectionChanged={onChangeTab} selectedIndex={parseInt(grupKodu) - 1}>
-                    {categories?.map((category) => (
-                        <Item title={category.aciklama} >
-                            <div className='products'>
-                                {products.map((product) => (
-                                    <button className='card' onClick={() => addToBasket(product.stokno)}>
-                                        <span>{product.stok_adi_kisa}</span>
-                                        <span>₺ {product.satis_fiyat}</span>                                    </button>
-                                ))}
-                            </div>
-                        </Item>
-                    ))}
-                </TabPanel>
-            </div>)
+            return (
+                <div className='categories'>
+                    <TabPanel onSelectionChanged={onChangeTab} selectedIndex={parseInt(grupKodu) - 1}>
+                        {categories?.map((category) => (
+                            <Item title={category.aciklama} >
+                                <div className='products'>
+                                    {products.map((product) => (
+                                        <button className='card' onClick={() => onclickProduct(product)}>
+                                            <span>{product.stok_adi_kisa}</span>
+                                            <span>₺ {product.satis_fiyat}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </Item>
+                        ))}
+                    </TabPanel>
+                </div>
+            )
     }
     const masaTitle = () => {
         if (tables)
             return (`Masa ${tables?.m_kodu}`)
+    }
+    const handleOrderDet = (product: SelectedProduct) => {
+        productDetRef.current?.instance.show();
+        setSelectedProductDet(product);
+        setTitle(product.product.stok_adi_kisa);
+    }
+    const incrementProductCount = (product: SelectedProduct) => {
+        product.count++;
+        const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
+        setProductsInBasket(allProductsInBasket);
+    }
+    const decrementProductCount = (product: SelectedProduct) => {
+        if (product.count > 1)
+            product.count--;
+        const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
+        setProductsInBasket(allProductsInBasket);
+    }
+    const fastPay = () => {
+        fastPayRef.current?.instance.show();
+        setFastPayTitle(`Hızlı Öde(₺ ${totalPrice})`)
+    }
+    const pay = () => {
 
     }
-    const [title, setTitle] = useState('')
-    const handleOrderDet = (productName: string) => {
-        productDetRef.current?.instance.show()
-        setTitle(productName)
+    const ProductDetPopupComponent = () => {
+        if (selectedProductDet)
+            return (
+                <Popup
+                    title={title}
+                    dragEnabled={false}
+                    hideOnOutsideClick={true}
+                    showCloseButton={true}
+                    showTitle={true}
+                    container=".dx-viewport"
+                    width={650}
+                    height={700}
+                    ref={productDetRef}>
+                    <Position at="center" my="center" collision="fit" />
+                    <ToolbarItem
+                        widget="dxButton"
+                        toolbar="bottom"
+                        location="after"
+                        options={{
+                            text: 'iptal',
+                            onClick: () => {
+                                productDetRef.current?.instance.hide()
+                            }
+                        }}
+                    />
+                    <ToolbarItem
+                        widget="dxButton"
+                        toolbar="bottom"
+                        location="after"
+                        options={{
+                            text: 'Kaydet',
+                            onClick: () => {
+                                productDetRef.current?.instance.hide()
+                                addToBasket(selectedProductDet)
+                            }
+                        }}
+                    />
+                    <div className='popup-contant'>
+                        <div className='popup-firstLi'>
+                            <div className='plus-minus-popup'>
+                                <button className='plus-minus-btn' onClick={() => {
+                                    selectedProductDet.count++;
+                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
+                                    setProductsInBasket(allProductsInBasket);
+                                    console.log(selectedProductDet);
+
+                                }} ><FontAwesomeIcon icon={faPlus} size="sm" style={{ color: "#e32b2b", }} /></button>
+                                <input className='product-count-popup' value={selectedProductDet.count} type='number' onChange={(e) => {
+                                    selectedProductDet.count = parseInt(e.target.value);
+                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
+                                    setProductsInBasket(allProductsInBasket);
+                                }}></input>
+                                <button className='plus-minus-btn' onClick={() => {
+                                    if (selectedProductDet.count > 1)
+                                        selectedProductDet.count--;
+                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
+                                    setProductsInBasket(allProductsInBasket);
+                                }}><FontAwesomeIcon icon={faMinus} size="sm" style={{ color: "#e32b2b", }} /></button>
+                            </div>
+                            <div>
+                                <textarea className='popup-textarea' placeholder='Ürün Notu ...' ></textarea>
+                            </div>
+                        </div>
+                        <div>
+                            <div className='popup-secondLine'>
+                                <span>Özellikler</span>
+                                <SelectBox placeholder='seç' noDataText='seçecek veri yok'>
+                                </SelectBox>
+                            </div>
+                        </div>
+                    </div>
+                </Popup>
+            )
     }
+    const FastPayPopup = () => {
+        return (
+            <Popup dragEnabled={false}
+                hideOnOutsideClick={true}
+                showCloseButton={true}
+                showTitle={true}
+                container=".dx-viewport"
+                width={650}
+                height={310}
+                title={fastPayTitle}
+                ref={fastPayRef}>
+                <Position at="center" my="center" collision="fit" />
+                <div>
+                    <span>işlem tipi seç</span>
+                    <SelectBox className='pay-selector' defaultValue={'Öde'} dataSource={payTypes}></SelectBox>
+                </div>
+                <div className='pay-types'>
+                    <div> <button className='pay-btn'><img className='pay-img' src="https://cdn.adisyo.com/paymenttypes/nakit.png" alt="" /> <span>Nakit</span></button></div>
+                    <div> <button className='pay-btn'><img className='pay-img' src="https://cdn.adisyo.com/paymenttypes/creditcart.png" alt="" /> <span>Kredi Kartı</span></button></div>
+                    <div> <button className='pay-btn'><img className='pay-img' src="https://cdn.adisyo.com/paymenttypes/debit.png" alt="" /> <span>Açık Hesap</span></button></div>
+                </div>
+            </Popup>
+        )
+    }
+
     useEffect(() => {
         if (setNavigationData) {
             setNavigationData({ currentPath: currentPath });
@@ -149,43 +267,11 @@ export default function Masa(props: any) {
         })
 
     }, [currentPath, setNavigationData, productsInBasket, bolumNo, masaNo, navigate, grupKodu, searchText])
+
     return (
         <React.Fragment>
-            <Popup
-                title={title}
-                dragEnabled={false}
-                hideOnOutsideClick={true}
-                showCloseButton={true}
-                showTitle={true}
-                container=".dx-viewport"
-                width={650}
-                height={700}
-                ref={productDetRef}>
-                <Position at="center" my="center" collision="fit" />
-                <ToolbarItem
-                    widget="dxButton"
-                    toolbar="bottom"
-                    location="after"
-                    options={{
-                        text: 'iptal',
-                        onClick: () => {
-                            productDetRef.current?.instance.hide()
-                        }
-                    }}
-                />
-                <ToolbarItem
-                    widget="dxButton"
-                    toolbar="bottom"
-                    location="after"
-                    options={{
-                        text: 'Kaydet',
-                        onClick: () => {
-                            productDetRef.current?.instance.hide()
-                        }
-                    }}
-                />
-
-            </Popup>
+            {ProductDetPopupComponent()}
+            {FastPayPopup()}
             <div className='all-contant'>
                 <div className='header'>
                     <i className="fa-solid fa-arrow-left"></i>
@@ -194,11 +280,10 @@ export default function Masa(props: any) {
                         className='main-button'>
                         <FontAwesomeIcon icon={faArrowLeft} size='xl' style={{ color: "#ffffff", }} />
                     </button>
-
-                    <input className='tableName' defaultValue={masaTitle()}></input>
+                    <input className='tableName' readOnly defaultValue={masaTitle()}></input>
                     <button className='main-button' ><FontAwesomeIcon size='xl' icon={faNotesMedical} /></button>
                     <button className='main-button' ><FontAwesomeIcon size='xl' icon={faUser} /></button>
-                    <button className='main-button'  >MARŞ</button>
+                    <button className='main-button'  ><FontAwesomeIcon size='xl' icon={faPrint} style={{ color: "#ffffff", }} /></button>
                     <input className='ara' onChange={Search} placeholder='Ürün Adı veya Barkod ile Arama'></input>
                     <button className='main-button' ><FontAwesomeIcon size='xl' icon={faUserGroup} /></button>
                     <button className='main-button' ><FontAwesomeIcon size='xl' icon={faCalendar} /></button>
@@ -213,61 +298,28 @@ export default function Masa(props: any) {
                             <div className='slected-products'>
                                 <div className='basket-container'>
                                     {
-                                        productsInBasket.map((b) => (
-                                            <div className='products-detales'>
-                                                <div className='product-det1'>
-                                                    <div className='plus-minus'>
-                                                        <button className='plus-minus-btn' onClick={() => {
-                                                            b.count++;
-                                                            const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                                            setProductsInBasket(allProductsInBasket);
-                                                        }} ><FontAwesomeIcon icon={faPlus} size="sm" style={{ color: "#e32b2b", }} /></button>
-                                                        <span className='product-count'>{b.count}</span>
-                                                        <button className='plus-minus-btn' onClick={() => {
-                                                            if (b.count > 1)
-                                                                b.count--;
-                                                            const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                                            setProductsInBasket(allProductsInBasket);
-                                                        }}><FontAwesomeIcon icon={faMinus} size="sm" style={{ color: "#e32b2b", }} /></button>
-                                                    </div>
-                                                    <span className='selected-product-name'>{b.product.stok_adi_kisa}</span>
-                                                </div>
-
-                                                <div className='product-det2'>
-                                                    <div className='selected-product-name'>
-                                                        ₺  {b.product.satis_fiyat}
-                                                    </div>
-                                                    <div><button className='bsket-arrow-btn' onClick={() => removeFromBasket(parseInt(b.product.grup_koduS))}><FontAwesomeIcon icon={faTrash} size="lg" style={{ color: "#e32b2b", }} /></button></div>
-                                                    <div><button className='bsket-arrow-btn' onClick={() => handleOrderDet(b.product.stok_adi_kisa)}><FontAwesomeIcon icon={faEllipsisVertical} size="lg" style={{ color: "#ec6341", }} /></button></div>
-                                                </div>
-                                            </div>
+                                        productsInBasket.map((product) => (
+                                            <ProductDetails
+                                                key={product.product.grup_koduS}
+                                                product={product.product}
+                                                count={product.count}
+                                                onIncrement={() => incrementProductCount(product)}
+                                                onDecrement={() => decrementProductCount(product)}
+                                                onRemove={() => removeFromBasket(parseInt(product.product.grup_koduS))}
+                                                onOrderDet={() => handleOrderDet(product)}
+                                            />
                                         ))
                                     }
                                 </div>
                             </div>
                         </div>
-                        <div className='basket-footer'>
-                            <button className='bsket-arrow-btn'><FontAwesomeIcon icon={faArrowUp} size="xl" style={{ color: "#e32b2b", }} /></button>
-                            <div className='tutar'>
-                                <span>Toplam Tutar</span>
-                                <span>₺{totalPrice}</span>
-                            </div>
-                            <div className='basket-buttons'>
-                                <button className='tag-btn'>
-                                    <FontAwesomeIcon icon={faTag} size="xl" style={{ color: "#e32b2b", }} />
-                                </button>
-                                {productsInBasket.length > 0 ? (
-                                    <div className='pey-buttons'>
-                                        <button className='pey-button' >Öde ₺{totalPrice}</button>
-
-                                        <button className='fast-pey-button' ><FontAwesomeIcon icon={faBolt} size="lg" style={{ color: "#e7eb00", }} /> Hızlı Öde </button>
-                                    </div>
-                                ) : null}
-                                <button className='save-btn' onClick={handleSave}>
-                                    Kaydet
-                                </button>
-                            </div>
-                        </div>
+                        <BasketFooter
+                            totalPrice={totalPrice}
+                            productsInBasket={productsInBasket}
+                            fastPay={() => fastPay()}
+                            pay={() => pay()}
+                            save={() => save()}
+                        />
                     </div>
                     <div className='cat-pro'>
                         {returnProducts()}
@@ -275,5 +327,85 @@ export default function Masa(props: any) {
                 </div>
             </div>
         </React.Fragment>
+    )
+}
+interface SelectedProduct {
+    count: number;
+    product: Product;
+}
+interface ProductDetailsProps {
+    product: Product;
+    count: number;
+    onIncrement: () => void;
+    onDecrement: () => void;
+    onRemove: () => void;
+    onOrderDet: () => void;
+}
+interface BasketFooterProps {
+    totalPrice: number;
+    productsInBasket: SelectedProduct[];
+    fastPay: () => void;
+    save: () => void;
+    pay: () => void;
+}
+
+const ProductDetails: React.FC<ProductDetailsProps> = ({ product, count, onIncrement, onDecrement, onRemove, onOrderDet }) => {
+    return (
+        <div className='products-detales'>
+            <div className='product-det1'>
+                <div className='plus-minus'>
+                    <button className='plus-minus-btn' onClick={onIncrement}>
+                        <FontAwesomeIcon icon={faPlus} size="sm" style={{ color: "#e32b2b" }} />
+                    </button>
+                    <span className='product-count'>{count}</span>
+                    <button className='plus-minus-btn' onClick={onDecrement}>
+                        <FontAwesomeIcon icon={faMinus} size="sm" style={{ color: "#e32b2b" }} />
+                    </button>
+                </div>
+                <span className='selected-product-name'>{product.stok_adi_kisa}</span>
+            </div>
+
+            <div className='product-det2'>
+                <div className='selected-product-name'>
+                    ₺ {product.satis_fiyat}
+                </div>
+                <div>
+                    <button className='bsket-arrow-btn' onClick={onRemove}>
+                        <FontAwesomeIcon icon={faTrash} size="lg" style={{ color: "#e32b2b" }} />
+                    </button>
+                </div>
+                <div>
+                    <button className='bsket-arrow-btn' onClick={() => onOrderDet()}>
+                        <FontAwesomeIcon icon={faEllipsisVertical} size="lg" style={{ color: "#ec6341" }} />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+const BasketFooter: React.FC<BasketFooterProps> = ({ totalPrice, productsInBasket, fastPay, save, pay }) => {
+    return (
+        <div className='basket-footer'>
+            <button className='bsket-arrow-btn'><FontAwesomeIcon icon={faArrowUp} size="xl" style={{ color: "#e32b2b", }} /></button>
+            <div className='tutar'>
+                <span>Toplam Tutar</span>
+                <span>₺{totalPrice}</span>
+            </div>
+            <div className='basket-buttons'>
+                <button className='tag-btn'>
+                    <FontAwesomeIcon icon={faTag} size="xl" style={{ color: "#e32b2b", }} />
+                </button>
+                {productsInBasket.length > 0 ? (
+                    <div className='pey-buttons'>
+                        <button className='pey-button' onClick={() => pay()} >Öde ₺{totalPrice}</button>
+
+                        <button className='fast-pey-button' onClick={() => fastPay()}><FontAwesomeIcon icon={faBolt} size="lg" style={{ color: "#e7eb00", }} /> Hızlı Öde </button>
+                    </div>
+                ) : null}
+                <button className='save-btn' onClick={() => save()}>
+                    Kaydet
+                </button>
+            </div>
+        </div>
     )
 }
