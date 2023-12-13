@@ -121,7 +121,7 @@ button {
 
 .card {
     width: 18% !important;
-    height: 120px !important;
+    height: 115px !important;
     background-color: #ffff;
     border-width: 0;
     border-radius: 10px;
@@ -193,7 +193,6 @@ button {
 
 .selected-product-name {
     color: #e32b2b;
-    margin: 10px;
     font-size: small;
     justify-self: center;
     font-weight: 500;
@@ -311,4 +310,11 @@ button {
 .pay-img {
     width: 50px;
     height: 40px;
+}
+
+.product-spans {
+    display: flex;
+    flex-flow: column;
+    height: 110px;
+    margin-left: 20px;
 }
