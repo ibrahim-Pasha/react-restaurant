@@ -1,4 +1,4 @@
-export class Categories {
+export class Category {
     refkodu: string;
     aciklama: string;
 

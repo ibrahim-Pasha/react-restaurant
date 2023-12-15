@@ -318,3 +318,10 @@ button {
     height: 110px;
     margin-left: 20px;
 }
+
+.description {
+    word-wrap: break-word;
+    max-width: 220px;
+    display: block;
+
+}

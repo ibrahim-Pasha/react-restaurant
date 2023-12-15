@@ -13,8 +13,8 @@ export default function Bolgeler(props: any) {
     const [bolumNo, setBolumNo] = useState(1)
     const { currentPath } = props;
     const { setNavigationData } = useNavigation();
-    const buttonClick = (e: any) => {
-        navigate("/masa", { state: { masaNo: e.element.accessKey, bolumno: bolumNo } });
+    const buttonClick = (m_kodu: number) => {
+        navigate("/masa", { state: { m_kodu: m_kodu, bolumno: bolumNo } });
     };
     const onChangeTab = (e: any) => {
         const selectedTab = e.addedItems[0];
@@ -62,10 +62,11 @@ export default function Bolgeler(props: any) {
                             >
                                 {tables?.Data?.map((t: Masa) => (
                                     <Button
-                                        aria-label={`Masa ${t.masano}`}
+                                        key={t.masano}
+                                        aria-label={`Masa ${t.m_kodu}`}
                                         className="card"
-                                        onClick={buttonClick}
-                                        accessKey={(t.masano).toString()}>
+                                        onClick={() => buttonClick(t.m_kodu)}
+                                    >
                                         <div
                                             className="card-content">
                                             <div className="card-header"><span>Masa {t.m_kodu}</span> </div>

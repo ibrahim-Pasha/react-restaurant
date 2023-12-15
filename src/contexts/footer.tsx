@@ -8,7 +8,6 @@ type FooterContextType = {
 const FooterContext = createContext<FooterContextType>({
     displayed: true,
 });
-const useFooter = () => useContext(FooterContext);
 
 function FooterProvider(props: any) {
     const [displayed, setDisplayed] = useState(true);
@@ -17,4 +16,7 @@ function FooterProvider(props: any) {
     };
     return <FooterContext.Provider value={{ displayed, trigger }} {...props} />;
 }
+
+const useFooter = () => useContext(FooterContext);
+
 export { useFooter, FooterProvider };

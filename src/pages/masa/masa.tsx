@@ -5,7 +5,7 @@ import { faArrowLeft, faArrowUp, faBolt, faCalendar, faEllipsisVertical, faMinus
 import { useLocation, useNavigate } from 'react-router-dom';
 import TabPanel, { Item } from "devextreme-react/tab-panel";
 import { useNavigation } from '../../contexts/navigation';
-import { Categories, Product, ReqData, StokExtraList } from '../../models';
+import { Category, Product, ReqData, StokExtraList } from '../../models';
 import { Masa as masaModel } from '../../models';
 import { CategoriesService, MasaService, ProductsService, SearchService, StokExtraListService } from '../../services';
 import Popup, { Position, ToolbarItem } from 'devextreme-react/popup';
@@ -15,49 +15,62 @@ export default function Masa(props: any) {
     const { setNavigationData } = useNavigation();
     const navigate = useNavigate()
     const { currentPath } = props;
-    const [categories, setCategories] = useState<Categories[]>()
+    const [categories, setCategories] = useState<Category[]>()
     const [products, setProducts] = useState<Product[]>([])
     const [productsInBasket, setProductsInBasket] = useState<SelectedProduct[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [filtredProducts, setFiltredProducts] = useState<Product[] | null>(null)
     const location = useLocation();
-    const masaNo = location.state?.masaNo;
+    const m_kodu = location.state?.m_kodu;
     const bolumNo = location.state?.bolumno
     const [tables, setTables] = useState<masaModel>();
     const [grupKodu, setGrupKodu] = useState("01")
     const productDetRef: any = useRef(null)
     const [searchText, setSearchText] = useState('')
     const [selectedProductDet, setSelectedProductDet] = useState<SelectedProduct>()
-    const [title, setTitle] = useState('')
     const [fastPayTitle, setFastPayTitle] = useState('')
     const payTypes = ['Öde', 'Öde & Yazdır']
     const fastPayRef: any = useRef(null)
     const [stokExtraList, setStokExtraList] = useState<StokExtraList[]>([])
-    const [textAreaValue, setTextAreaValue] = useState('');
-
+    const [orderId, setOrderId] = useState(1)
     const handlePopupClose = () => {
         productDetRef.current?.instance.hide()
-        setTextAreaValue('');
+        setSelectedProductDet(undefined)
     };
     const save = () => {
-        navigate('/bolgeler', { state: { masano: tables?.masano } })
+        navigate('/bolgeler', { state: { m_kodu: tables?.m_kodu } })
     }
     const calculateTotal = (value: SelectedProduct[]) => {
         const pricesInBasket = value.map((product) => (product.count) * product.product.satis_fiyat)
         setTotalPrice(pricesInBasket.reduce((accumulator, currentValue) => accumulator + currentValue, 0))
     }
-    const addToBasket = (product: SelectedProduct) => {
-
-        const clickedProdcut = product
-        if (productsInBasket && clickedProdcut) {
-            const allProductsInBasket: SelectedProduct[] = [
-
-                ...productsInBasket,
-                clickedProdcut
-            ];
+    const updateBasket = () => {
+        const productInBasket = productsInBasket.find((product) => product.id === selectedProductDet?.id)
+        if (productInBasket && selectedProductDet) {
+            productInBasket.count = selectedProductDet.count
+            productInBasket.description = selectedProductDet.description
+            productInBasket.product = selectedProductDet.product
+            productInBasket.property = selectedProductDet.property
+            const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
             setProductsInBasket(allProductsInBasket);
         }
+        else {
+            const id = orderId + 1
+            setOrderId(id)
+            const selectedProduct = selectedProductDet;
+            if (selectedProduct) {
+                selectedProduct.id = orderId
+                const clickedProdcut: SelectedProduct = selectedProduct
+                if (productsInBasket && clickedProdcut) {
+                    const allProductsInBasket: SelectedProduct[] = [
 
+                        ...productsInBasket,
+                        clickedProdcut
+                    ];
+                    setProductsInBasket(allProductsInBasket);
+                }
+            }
+        }
     }
     const removeFromBasket = (id: number) => {
         const productInBasket = productsInBasket.find((p) => parseInt(p.product.grup_koduS) === id);
@@ -83,14 +96,15 @@ export default function Masa(props: any) {
             if (selectedGrupKod) { setGrupKodu(selectedGrupKod) }
         }
     }
-    const onclickProduct = (product: Product) => {
-        setSelectedProductDet({ product: product, count: 1, description: '', property: undefined })//to use when gettin stok exra list
-        handleOrderDet({ product, count: 1 })
+    const onclickProduct = async (product: Product) => {
+        if (product) {
+            await setSelectedProductDet({ product: product, count: 1, description: '', property: undefined, id: orderId })
+            productDetRef.current?.instance.show();
+        }
     }
-
-    const handleOrderDet = (product: SelectedProduct) => {
+    const changeOrderDet = async (product: SelectedProduct) => {
+        await setSelectedProductDet(product);
         productDetRef.current?.instance.show();
-        setTitle(product.product.stok_adi_kisa);
     }
     const returnProducts = () => {
         if (filtredProducts) {
@@ -104,20 +118,20 @@ export default function Masa(props: any) {
                             <span>₺ {product.satis_fiyat}</span>
                         </button>
                     ))}
-                </div>)
+                </div>
+            )
         }
         else
             return (
                 <div className='categories'>
                     <TabPanel
-                        id='1'
                         onSelectionChanged={onChangeTab}
                         selectedIndex={parseInt(grupKodu) - 1}>
                         {categories?.map((category) => (
                             <Item title={category.aciklama} key={category.refkodu}>
                                 <div className='products'>
                                     {products.map((product) => (
-                                        <button className='card' onClick={() => onclickProduct(product)}>
+                                        <button className='card' key={product.stokno} onClick={() => onclickProduct(product)}>
                                             <span>{product.stok_adi_kisa}</span>
                                             <span>₺ {product.satis_fiyat}</span>
                                         </button>
@@ -128,10 +142,6 @@ export default function Masa(props: any) {
                     </TabPanel>
                 </div>
             )
-    }
-    const masaTitle = () => {
-        if (tables)
-            return (`Masa ${tables?.m_kodu}`)
     }
     const incrementProductCount = (product: SelectedProduct) => {
         product.count++;
@@ -156,7 +166,7 @@ export default function Masa(props: any) {
         if (selectedProductDet)
             return (
                 <Popup
-                    title={title}
+                    title={selectedProductDet.product.stok_adi_kisa}
                     dragEnabled={false}
                     hideOnOutsideClick={true}
                     showCloseButton={true}
@@ -184,11 +194,7 @@ export default function Masa(props: any) {
                         options={{
                             text: 'Kaydet',
                             onClick: () => {
-                                selectedProductDet.description = textAreaValue
-                                const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                setProductsInBasket(allProductsInBasket);
-
-                                addToBasket(selectedProductDet)
+                                updateBasket()
                                 handlePopupClose()
                             }
                         }}
@@ -197,31 +203,30 @@ export default function Masa(props: any) {
                         <div className='popup-firstLi'>
                             <div className='plus-minus-popup'>
                                 <button className='plus-minus-btn' onClick={() => {
-                                    selectedProductDet.count++;
-                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                    setProductsInBasket(allProductsInBasket);
-                                    console.log(selectedProductDet);
-
+                                    const newProductDet = { ...selectedProductDet }
+                                    newProductDet.count++;
+                                    setSelectedProductDet(newProductDet);
                                 }} ><FontAwesomeIcon icon={faPlus} size="sm" style={{ color: "#e32b2b", }} /></button>
-                                <input className='product-count-popup' value={selectedProductDet.count} type='number' onChange={(e) => {
-                                    selectedProductDet.count = parseInt(e.target.value);
-                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                    setProductsInBasket(allProductsInBasket);
+                                <input className='product-count-popup' value={selectedProductDet.count} type='number' onChange={async (e) => {
+                                    const newProductDet = { ...selectedProductDet }
+                                    newProductDet.count = parseInt(e.target.value);
+                                    await setSelectedProductDet(newProductDet);
                                 }}></input>
-                                <button className='plus-minus-btn' onClick={() => {
-                                    if (selectedProductDet.count > 1)
-                                        selectedProductDet.count--;
-                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                    setProductsInBasket(allProductsInBasket);
+                                <button className='plus-minus-btn' onClick={async () => {
+                                    if (selectedProductDet.count > 1) {
+                                        const newProductDet = { ...selectedProductDet }
+
+                                        newProductDet.count--;
+                                        await setSelectedProductDet(newProductDet);
+                                    }
                                 }}><FontAwesomeIcon icon={faMinus} size="sm" style={{ color: "#e32b2b", }} /></button>
                             </div>
                             <div>
-                                <textarea className='popup-textarea' placeholder='Ürün Notu ...' value={textAreaValue} onChange={
-                                    (e) => {
-
-                                        setTextAreaValue(e.target.value);
-
-
+                                <textarea className='popup-textarea' placeholder='Ürün Notu ...' value={selectedProductDet.description} onChange={
+                                    async (e) => {
+                                        const newProductDet = { ...selectedProductDet }
+                                        newProductDet.description = e.target.value
+                                        setSelectedProductDet(newProductDet)
                                     }
                                 } ></textarea>
                             </div>
@@ -229,10 +234,13 @@ export default function Masa(props: any) {
                         <div>
                             <div className='popup-secondLine'>
                                 <span>Özellikler</span>
-                                <SelectBox placeholder='seç' dataSource={extraAd} noDataText='seçecek veri yok' onSelectionChanged={(e) => {
-                                    selectedProductDet.property = e.selectedItem;
-                                    const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-                                    setProductsInBasket(allProductsInBasket);
+                                <SelectBox placeholder='seç' dataSource={extraAd} value={selectedProductDet.property ? selectedProductDet.property : ''} noDataText='seçecek veri yok' onSelectionChanged={(e) => {
+                                    console.log(selectedProductDet.property ?? null);
+
+                                    const newProductDet = { ...selectedProductDet }
+                                    newProductDet.property = e.selectedItem;
+                                    setSelectedProductDet(newProductDet)
+
                                 }
                                 } />
                             </div>
@@ -271,7 +279,7 @@ export default function Masa(props: any) {
             setNavigationData({ currentPath: currentPath });
         }
         calculateTotal(productsInBasket)
-        if (masaNo == null) {
+        if (m_kodu == null) {
             navigate('/bolgeler')
         }
         const Masalar$ = MasaService.getAll(
@@ -286,7 +294,7 @@ export default function Masa(props: any) {
 
         }
         Promise.all([Masalar$, Categories$, Products$, Serched$, stokExtraList$]).then((results) => {
-            const masa = results[0].Data.find((masa: masaModel) => masa.masano.toString() === masaNo)
+            const masa = results[0].Data.find((masa: masaModel) => masa.m_kodu === m_kodu)
             const categories = results[1].Data
             const Products = results[2].Data
             const filteredProducts = results[3].Data
@@ -299,7 +307,7 @@ export default function Masa(props: any) {
             else setFiltredProducts(filteredProducts)
         })
 
-    }, [currentPath, setNavigationData, productsInBasket, bolumNo, masaNo, navigate, grupKodu, searchText, selectedProductDet?.product.stokno])
+    }, [currentPath, setNavigationData, productsInBasket, bolumNo, m_kodu, navigate, grupKodu, searchText, selectedProductDet?.product.stokno])
 
     return (
         <React.Fragment>
@@ -313,7 +321,7 @@ export default function Masa(props: any) {
                         className='main-button'>
                         <FontAwesomeIcon icon={faArrowLeft} size='xl' style={{ color: "#ffffff", }} />
                     </button>
-                    <input className='tableName' readOnly defaultValue={masaTitle()}></input>
+                    <input className='tableName' readOnly defaultValue={tables && `Masa ${tables?.m_kodu}`}></input>
                     <button className='main-button' ><FontAwesomeIcon size='xl' icon={faNotesMedical} /></button>
                     <button className='main-button' ><FontAwesomeIcon size='xl' icon={faUser} /></button>
                     <button className='main-button'  ><FontAwesomeIcon size='xl' icon={faPrint} style={{ color: "#ffffff", }} /></button>
@@ -338,7 +346,7 @@ export default function Masa(props: any) {
                                                 onIncrement={() => incrementProductCount(product)}
                                                 onDecrement={() => decrementProductCount(product)}
                                                 onRemove={() => removeFromBasket(parseInt(product.product.grup_koduS))}
-                                                onOrderDet={() => handleOrderDet(product)}
+                                                onOrderDet={() => changeOrderDet(product)}
                                             />
                                         ))
                                     }
@@ -362,6 +370,7 @@ export default function Masa(props: any) {
     )
 }
 interface SelectedProduct {
+    id: number
     count: number;
     product: Product;
     description?: string;
@@ -386,12 +395,12 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ product, onIncrement, o
     const description = () => {
         if (product.description) {
             return (
-                <div><span><b>Not: </b> {product.description}</span></div>
+                <div ><span className='description'><b>Not: </b> {product.description}</span></div>
             )
         }
     }
     return (
-        <div className='products-detales'>
+        <div className='products-detales' key={product.id}>
             <div className='product-det1'>
                 <div className='plus-minus'>
                     <button className='plus-minus-btn' onClick={onIncrement}>
