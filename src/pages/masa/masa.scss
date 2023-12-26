@@ -191,6 +191,10 @@ button {
     border: 1px solid rgba(216, 215, 215, 0.5);
 }
 
+.plus-minus-btn:hover {
+    background-color: #d3d3d3;
+}
+
 .selected-product-name {
     color: #e32b2b;
     font-size: small;
@@ -219,7 +223,7 @@ button {
     overflow-y: auto;
 }
 
-.pey-button {
+.pay-button {
     width: 50%;
 
     background-color: rgb(76, 175, 76);
@@ -230,7 +234,7 @@ button {
     margin: 0px 5px 0px 5px;
 }
 
-.fast-pey-button {
+.fast-pay-button {
     width: 50%;
     background-color: rgb(243, 243, 243);
     color: gold;
@@ -246,7 +250,7 @@ button {
 
 }
 
-.pey-buttons {
+.pay-buttons {
     display: flex;
     flex-direction: row;
     width: 600px;
@@ -292,7 +296,7 @@ button {
     display: flex;
     flex-flow: row;
     justify-content: space-around;
-    margin-top: 10px;
+    margin-top: 4px;
 }
 
 .pay-btn {
@@ -301,10 +305,13 @@ button {
     background-color: #ffffff;
     border-width: 1px;
     border-color: #d3d3d3;
+    border-style: groove;
+    border-radius: 5px;
     display: flex;
     flex-flow: column;
     justify-content: space-evenly;
     align-items: center;
+    margin: 7px 7px 0 7px;
 }
 
 .pay-img {
@@ -323,5 +330,16 @@ button {
     word-wrap: break-word;
     max-width: 220px;
     display: block;
+}
 
+.ikram {
+    margin-top: 10px;
+    width: 100%;
+    height: 30px;
+    border-width: 0;
+    font-size: larger;
+}
+
+.ikram:hover {
+    background-color: #d3d3d3;
 }
