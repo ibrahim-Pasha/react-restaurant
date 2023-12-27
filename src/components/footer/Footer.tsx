@@ -14,6 +14,7 @@ export default ({ ...rest }) => {
       trigger(false);
     }
   }
-  if (displayed) { return <footer className={"footer"} {...rest} />; }
-  else return null
+  if (displayed) {
+    return <footer className={"footer"} {...rest} />;
+  } else return null;
 };

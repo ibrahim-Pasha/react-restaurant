@@ -5,7 +5,5 @@
   "outputColorScheme": "additional",
   "makeSwatch": true,
   "base": true,
-  "widgets": [
-    "treeview"
-  ]
+  "widgets": ["treeview"]
 }

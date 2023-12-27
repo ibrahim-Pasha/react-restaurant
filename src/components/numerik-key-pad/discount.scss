@@ -1,62 +1,59 @@
 .discount-contant {
-    width: 100%;
-    border-width: 1px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 7px;
-    height: 100%;
+  width: 100%;
+  border-width: 1px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 7px;
+  height: 100%;
 }
 
 .discount-type {
-    margin-top: 15px;
-    display: flex;
-    flex-flow: row;
-    justify-content: space-evenly;
+  margin-top: 15px;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-evenly;
 }
 
 .discount-btn {
-    width: 45%;
-    height: 40px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 5px;
-    background-color: #ffffff;
-
+  width: 45%;
+  height: 40px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 5px;
+  background-color: #ffffff;
 }
 
 .discount-btn:focus,
 .discount-btn.active {
-    background-color: #c5c3c3;
+  background-color: #c5c3c3;
 }
 
 .numeric-btn:hover {
-    background: #e2e0e0;
+  background: #e2e0e0;
 }
 
 .discount-total {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-    border-width: 0 0 1px 0;
-    border-style: groove;
-
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  border-width: 0 0 1px 0;
+  border-style: groove;
 }
 
 .numeric-pad {
-    display: flex;
-    flex-flow: row;
-    flex-wrap: wrap;
-    width: 375px;
-    height: 306px;
-    margin: 0;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  width: 375px;
+  height: 306px;
+  margin: 0;
 }
 
-
 .numeric-btn {
-    width: 117px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 5px;
-    background-color: #ffffff;
-    border-width: 0 1px 1px 0;
+  width: 117px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 5px;
+  background-color: #ffffff;
+  border-width: 0 1px 1px 0;
 }

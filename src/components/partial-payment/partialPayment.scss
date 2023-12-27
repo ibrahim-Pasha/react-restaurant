@@ -1,185 +1,180 @@
 .pay-contant {
-    display: flex;
-    flex-flow: row;
-    justify-content: space-evenly;
-    height: 550px;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-evenly;
+  height: 550px;
 }
 
 .select-product-topay {
-    width: 30%;
-    border-width: 1px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 7px;
+  width: 30%;
+  border-width: 1px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 7px;
 }
 
 .pay-headers {
-    border-color: #dbdbdb;
-    border-width: 0 0 1px 0;
-    border-style: ridge;
-    padding: 7px;
-    font-size: medium;
-    display: flex;
-    justify-content: space-between;
+  border-color: #dbdbdb;
+  border-width: 0 0 1px 0;
+  border-style: ridge;
+  padding: 7px;
+  font-size: medium;
+  display: flex;
+  justify-content: space-between;
 }
 
 .enter-amount {
-    width: 30%;
-    border-width: 1px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 7px;
-    display: flex;
-    flex-flow: column;
-    justify-content: space-between;
+  width: 30%;
+  border-width: 1px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 7px;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
 }
 
 .select-pay-type {
-    width: 30%;
-    border-width: 1px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 7px;
+  width: 30%;
+  border-width: 1px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 7px;
 }
 
 .select-pay-types {
-    display: flex;
-    flex-wrap: wrap;
-    margin: 10px;
-
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px;
 }
 
 .pay-img {
-    width: 50px;
-    height: 40px;
+  width: 50px;
+  height: 40px;
 }
 
 .pay-btn {
-    width: 170px;
-    height: 120px;
-    background-color: #ffffff;
-    border-width: 1px;
-    border-color: #d3d3d3;
-    border-style: groove;
-    border-radius: 5px;
-    display: flex;
-    flex-flow: column;
-    justify-content: space-evenly;
-    align-items: center;
-    margin: 7px 7px 0 7px;
+  width: 170px;
+  height: 120px;
+  background-color: #ffffff;
+  border-width: 1px;
+  border-color: #d3d3d3;
+  border-style: groove;
+  border-radius: 5px;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 7px 7px 0 7px;
 }
 
 .pay-btn:hover {
-    background-color: #d3d3d3;
+  background-color: #d3d3d3;
 }
 
 .key-pad {
-    display: flex;
-    flex-flow: column;
-    height: 300px;
-    width: 100%;
-    border-width: 1px 0 0 0;
-    border-style: groove;
-    border-color: #d3d3d3;
+  display: flex;
+  flex-flow: column;
+  height: 300px;
+  width: 100%;
+  border-width: 1px 0 0 0;
+  border-style: groove;
+  border-color: #d3d3d3;
 }
 
 .numeric-keypad {
-    display: flex;
-    flex-flow: row;
-    width: 405px;
-
+  display: flex;
+  flex-flow: row;
+  width: 405px;
 }
 
 .numeric-buttons {
-    display: flex;
-    flex-flow: row;
-    flex-wrap: wrap;
-    width: 860px;
-    height: 300px;
-    margin: 0;
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+  width: 860px;
+  height: 300px;
+  margin: 0;
 }
 
 .numeric-button {
-    width: 99px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 5px;
-    background-color: #ffffff;
-    border-width: 0 1px 1px 0;
+  width: 99px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 5px;
+  background-color: #ffffff;
+  border-width: 0 1px 1px 0;
 }
 
 .numeric-button:hover {
-    background-color: #d3d3d3;
+  background-color: #d3d3d3;
 }
 
 .pad-keys {
-    height: 300px;
-    width: 99px;
+  height: 300px;
+  width: 99px;
 }
 
 .pad-key {
-    width: 99px;
-    border-color: #dbdbdb;
-    border-style: ridge;
-    border-radius: 5px;
-    background-color: #ffffff;
-    border-width: 0 1px 1px 0;
-    height: 75px;
+  width: 99px;
+  border-color: #dbdbdb;
+  border-style: ridge;
+  border-radius: 5px;
+  background-color: #ffffff;
+  border-width: 0 1px 1px 0;
+  height: 75px;
 }
 
 .pad-key:hover {
-    background-color: #d3d3d3;
+  background-color: #d3d3d3;
 }
 
 .select-orders {
-    display: flex;
-    flex-flow: row;
-    justify-content: space-between;
-    border-width: 0 0 1px 0;
-    border-color: #d3d3d3;
-    border-style: groove;
-    padding: 15px;
-    cursor: pointer;
-
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  border-width: 0 0 1px 0;
+  border-color: #d3d3d3;
+  border-style: groove;
+  padding: 15px;
+  cursor: pointer;
 }
 
 .selected-orders {
-    display: flex;
-    flex-flow: row;
-    justify-content: space-between;
-    border-width: 0 0 1px 0;
-    border-color: #d3d3d3;
-    border-style: groove;
-    padding: 15px;
-    cursor: pointer;
-    text-decoration: line-through;
-
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+  border-width: 0 0 1px 0;
+  border-color: #d3d3d3;
+  border-style: groove;
+  padding: 15px;
+  cursor: pointer;
+  text-decoration: line-through;
 }
 
 .not-paid-btn {
-    border-radius: 20px;
-    border-style: none;
-    padding: 10px;
+  border-radius: 20px;
+  border-style: none;
+  padding: 10px;
 }
 
 .not-paid-btn::before {
-    content: "";
-    position: absolute;
-    top: 153px;
-    left: 58px;
-    width: 29%;
-    height: 1px;
-    border-width: 0 0 1px 0;
-    border-style: groove;
-    background: var(--bg-light);
-    transform: translateY(-50%);
-    z-index: -1;
+  content: "";
+  position: absolute;
+  top: 153px;
+  left: 58px;
+  width: 29%;
+  height: 1px;
+  border-width: 0 0 1px 0;
+  border-style: groove;
+  background: var(--bg-light);
+  transform: translateY(-50%);
+  z-index: -1;
 }
 
-
 .div-btn {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    margin-bottom: 30px;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 30px;
 }

@@ -80,9 +80,11 @@ export default function Masa(props: any) {
     productDetRef.current?.instance.hide();
     setSelectedProductDet(undefined);
   };
+
   const save = () => {
     navigate("/bolgeler", { state: { m_kodu: tables?.m_kodu } });
   };
+
   const calculateTotal = (value: SelectedProduct[]) => {
     const pricesInBasket = value.map((product) => product.totalPrice);
     setTotalPrice(
@@ -92,6 +94,7 @@ export default function Masa(props: any) {
       )
     );
   };
+
   const updateBasket = () => {
     const productInBasket = productsInBasket.find(
       (product) => product.id === selectedProductDet?.id
@@ -133,10 +136,12 @@ export default function Masa(props: any) {
       }
     }
   };
+
   const Search = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setSearchText(value);
   };
+
   const onChangeTab = useCallback(
     (e: any) => {
       const selectedTab = e.addedItems[0];
@@ -152,9 +157,9 @@ export default function Masa(props: any) {
     },
     [categories]
   );
-  const onclickProduct = async (product: Product) => {
+  const onclickProduct = (product: Product) => {
     if (product) {
-      await setSelectedProductDet({
+      setSelectedProductDet({
         product: product,
         count: 1,
         description: "",
@@ -165,10 +170,12 @@ export default function Masa(props: any) {
       productDetRef.current?.instance.show();
     }
   };
+
   const changeOrderDet = async (product: SelectedProduct) => {
-    await setSelectedProductDet(product);
+    setSelectedProductDet(product);
     productDetRef.current?.instance.show();
   };
+
   const incrementProductCount = (product: SelectedProduct) => {
     product.count++;
     product.totalPrice += product.product.satis_fiyat;
@@ -191,7 +198,7 @@ export default function Masa(props: any) {
     payPopupRef.current?.instance.show();
     setPayPopupTitle(`Masa Adı: Masa ${m_kodu}`);
   };
-  const ikramet = async (order: SelectedProduct, bool: boolean) => {
+  const ikramet = (order: SelectedProduct, bool: boolean) => {
     const productInBasket = productsInBasket.find(
       (product) => product.id === selectedProductDet?.id
     );
@@ -199,17 +206,17 @@ export default function Masa(props: any) {
       if (productInBasket) {
         productInBasket.totalPrice = 0;
         const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-        await setProductsInBasket(allProductsInBasket);
+        setProductsInBasket(allProductsInBasket);
       }
-      await setSelectedProductDet({ ...order, totalPrice: 0 });
+      setSelectedProductDet({ ...order, totalPrice: 0 });
     } else {
       if (productInBasket && selectedProductDet) {
         productInBasket.totalPrice =
           selectedProductDet.count * selectedProductDet.product.satis_fiyat;
         const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
-        await setProductsInBasket(allProductsInBasket);
+        setProductsInBasket(allProductsInBasket);
       }
-      await setSelectedProductDet({
+      setSelectedProductDet({
         ...order,
         totalPrice: order.count * order.product.satis_fiyat,
       });
@@ -218,6 +225,7 @@ export default function Masa(props: any) {
     const clonedMap = new Map(ikram);
     setIkram(clonedMap);
   };
+
   const ProductDetPopupComponent = () => {
     const extraAd = stokExtraList?.map((stok) => stok.ekstra_adi);
 
@@ -312,18 +320,18 @@ export default function Masa(props: any) {
                   className="product-count-popup"
                   value={selectedProductDet.count}
                   type="number"
-                  onChange={async (e) => {
+                  onChange={(e) => {
                     const newProductDet = { ...selectedProductDet };
                     newProductDet.count = parseInt(e.target.value);
                     newProductDet.totalPrice =
                       parseInt(e.target.value) *
                       selectedProductDet.product.satis_fiyat;
-                    await setSelectedProductDet(newProductDet);
+                    setSelectedProductDet(newProductDet);
                   }}
                 ></input>
                 <button
                   className="plus-minus-btn"
-                  onClick={async () => {
+                  onClick={() => {
                     if (selectedProductDet.count > 1) {
                       const newProductDet = { ...selectedProductDet };
 
@@ -331,7 +339,7 @@ export default function Masa(props: any) {
                       newProductDet.totalPrice =
                         (selectedProductDet.count - 1) *
                         selectedProductDet.product.satis_fiyat;
-                      await setSelectedProductDet(newProductDet);
+                      setSelectedProductDet(newProductDet);
                     }
                   }}
                 >
@@ -463,7 +471,7 @@ export default function Masa(props: any) {
           options={{
             text: "Öde",
             icon: "save",
-            onClick: () => { },
+            onClick: () => {},
           }}
         />
         <ToolbarItem
@@ -473,7 +481,7 @@ export default function Masa(props: any) {
           options={{
             text: "Öde ve yazdır",
             icon: "print",
-            onClick: () => { },
+            onClick: () => {},
           }}
         />
         <PartialPayment totalPrice={totalPrice} basket={productsInBasket} />
@@ -718,7 +726,7 @@ interface ProductsProps {
   products: Product[];
   onclickProduct: (product: Product) => void;
 }
-interface CombinedProps extends CategoriesProps, ProductsProps { }
+interface CombinedProps extends CategoriesProps, ProductsProps {}
 const Basket: React.FC<BasketProps> = memo(
   ({ product, onIncrement, onDecrement, onRemove, onOrderDet, ikram }) => {
     const description = () => {

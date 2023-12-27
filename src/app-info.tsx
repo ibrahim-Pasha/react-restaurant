@@ -1,5 +1,4 @@
 const appInfo = {
-    title: 'Ravi Restaurant'
+  title: "Ravi Restaurant",
 };
 export default appInfo;
-
