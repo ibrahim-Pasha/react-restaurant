@@ -1,6 +1,8 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Product } from "../../models";
 import "./partialPayment.scss";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const PartialPayment: React.FC<partialPaymentprops> = ({
   totalPrice,
@@ -9,9 +11,11 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
   const [paymnt, setpeyment] = useState(new Map<SelectedProduct, boolean>());
   const [enteredValue, setEnteredValue] = useState(totalPrice.toString());
   const [totalValue, setTotalValue] = useState(totalPrice);
-
+  const [matList, setMatList] = useState<payList[]>([]);
+  const [selectedOrders, setSelectedOrders] = useState<SelectedProduct[]>([]);
+  const [payId, setPayId] = useState(0);
+  const [priceWillPay, setPriceWillPay] = useState(0);
   const handleButtonClick = (value: number) => {
-    console.log(totalValue, totalPrice);
     if (totalPrice === totalValue) {
       setEnteredValue(value.toString());
       calculateTotal(value.toString());
@@ -27,32 +31,114 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
   };
   const handleDeleteButtonClick = () => {
     if (totalPrice !== totalValue) {
-      setEnteredValue(enteredValue.slice(0, -1));
-      calculateTotal(enteredValue.slice(0, -1));
-    }
-  };
-
-  const calculateTotal = (value: string) => {
-    const enteredNumber = parseFloat(value);
-    if (!isNaN(enteredNumber)) {
-      setTotalValue(enteredNumber);
+      if (enteredValue.length === 1) {
+        setEnteredValue(totalPrice.toString());
+        calculateTotal(totalPrice.toString());
+      } else {
+        setEnteredValue(enteredValue.slice(0, -1));
+        calculateTotal(enteredValue.slice(0, -1));
+      }
     } else {
       setTotalValue(totalPrice);
       setEnteredValue(totalPrice.toString());
     }
   };
+  const calculateTotal = (value: string) => {
+    const enteredNumber = parseFloat(value);
+    if (!isNaN(enteredNumber)) {
+      setTotalValue(enteredNumber);
+    } else {
+      //setTotalValue(matList);
+      setEnteredValue(totalValue.toString());
+    }
+  };
   const handleSelectOrder = (order: SelectedProduct) => {
     if (paymnt.get(order)) {
-      paymnt.set(order, false);
+      paymnt.delete(order);
       const clonedMap = new Map(paymnt);
       setpeyment(clonedMap);
+      const allOrders = selectedOrders;
+      const indexOfOrder = allOrders?.indexOf(order);
+      if (indexOfOrder) {
+        allOrders?.splice(indexOfOrder, 1);
+        setSelectedOrders(allOrders);
+      }
     } else {
       paymnt.set(order, true);
       const clonedMap = new Map(paymnt);
-
       setpeyment(clonedMap);
+      const allOrders = selectedOrders;
+      allOrders?.push(order);
+      setSelectedOrders(allOrders);
     }
   };
+  const onSelectPayType = (type: string) => {
+    if (totalValue > 0) {
+      setPayId(payId + 1);
+      if (selectedOrders.length > 0) {
+        console.log(selectedOrders);
+
+        const price = selectedOrders
+          .map((order) => order.totalPrice)
+          .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        const selectedOrder: payList = {
+          id: payId,
+          selectedOrder: selectedOrders,
+          type: type,
+          price: price,
+        };
+        const allSelectedOrders = matList;
+        allSelectedOrders.push(selectedOrder);
+        setMatList(allSelectedOrders);
+        setTotalValue((prevValue) => prevValue - price);
+        setEnteredValue("");
+      } else {
+        const selectedOrder: payList = {
+          id: payId,
+          selectedOrder: selectedOrders,
+          type: type,
+          price: totalValue,
+        };
+        const allSelectedOrders = matList;
+        allSelectedOrders.push(selectedOrder);
+        setMatList(allSelectedOrders);
+        setTotalValue((prevTotal) => prevTotal - parseFloat(enteredValue));
+      }
+      setSelectedOrders([]);
+    }
+    const totalPriceToPay = matList
+      .map((mat) => mat.price)
+      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+    setPriceWillPay(totalPriceToPay);
+  };
+  console.log(enteredValue, totalValue);
+
+  const onRemovePay = (matId: number) => {
+    const matToRemove = matList.find((mat) => mat.id === matId);
+    if (matToRemove) {
+      const indexOfMatToRemove = matList.indexOf(matToRemove);
+      matList.splice(indexOfMatToRemove, 1);
+      const allMats = matList;
+      console.log(allMats);
+      setMatList(allMats);
+    }
+  };
+  console.log(matList);
+  useEffect(() => {
+    setTotalValue(totalPrice);
+
+    const handleKeyDown = (event: any) => {
+      if (event.key >= "0" && event.key <= "9") {
+        setEnteredValue(enteredValue + event.key);
+        calculateTotal(enteredValue + event.key);
+      }
+      console.log(event.key);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [totalPrice, calculateTotal, enteredValue]);
   return (
     <div className="pay-contant">
       <div className="select-product-topay">
@@ -62,12 +148,11 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
         <div className="div-btn">
           <button className="not-paid-btn">Ödenmemiş olanlar</button>
         </div>
-        {basket.map((order) => {
+        {basket.map((order, id) => {
           if (paymnt.get(order)) {
-            console.log(paymnt.get(order));
-
             return (
               <div
+                key={id}
                 className="selected-orders"
                 onClick={() => handleSelectOrder(order)}
               >
@@ -78,10 +163,9 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
               </div>
             );
           } else {
-            console.log(false);
-
             return (
               <div
+                key={id}
                 className="select-orders"
                 onClick={() => handleSelectOrder(order)}
               >
@@ -99,10 +183,38 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
           <b>Toplam</b> <span>₺{totalPrice}</span>
         </div>
         <div>
-          <div className="selected-products"></div>
-          <span style={{ float: "right" }}>
-            Ödenecek Tutar : {totalValue.toFixed(2)}
-          </span>
+          <div className="mat-list">
+            {" "}
+            <div className="selected-products">
+              {matList.map((mat, id) => {
+                return (
+                  <div className="mat" key={id}>
+                    <div>
+                      <span>{mat.type}</span>
+                    </div>
+                    <div>
+                      <span>₺ {mat.price}</span>
+                      <button
+                        className="spimle_icon"
+                        onClick={() => onRemovePay(mat.id)}
+                      >
+                        <FontAwesomeIcon
+                          icon={faTrash}
+                          size="lg"
+                          style={{ color: "#e32b2b" }}
+                        />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div>
+              <span style={{ float: "right" }}>
+                Ödenecek Tutar : {totalValue.toFixed(2)}
+              </span>
+            </div>
+          </div>
           <div className="key-pad">
             <div className="numeric-keypad">
               <div className="numeric-buttons">
@@ -155,7 +267,10 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
         <div className="select-pay-types">
           <div>
             {" "}
-            <button className="pay-btn">
+            <button
+              className="pay-btn"
+              onClick={() => onSelectPayType("nakit")}
+            >
               <img
                 className="pay-img"
                 src="https://cdn.adisyo.com/paymenttypes/nakit.png"
@@ -166,7 +281,10 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
           </div>
           <div>
             {" "}
-            <button className="pay-btn">
+            <button
+              className="pay-btn"
+              onClick={() => onSelectPayType("credicart")}
+            >
               <img
                 className="pay-img"
                 src="https://cdn.adisyo.com/paymenttypes/creditcart.png"
@@ -177,7 +295,10 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
           </div>
           <div>
             {" "}
-            <button className="pay-btn">
+            <button
+              className="pay-btn"
+              onClick={() => onSelectPayType("debit")}
+            >
               <img
                 className="pay-img"
                 src="https://cdn.adisyo.com/paymenttypes/debit.png"
@@ -197,10 +318,17 @@ interface SelectedProduct {
   product: Product;
   description?: string;
   property?: string;
+  totalPrice: number;
 }
 
 interface partialPaymentprops {
   totalPrice: number;
   basket: SelectedProduct[];
+}
+interface payList {
+  selectedOrder?: SelectedProduct[];
+  type: string;
+  price: number;
+  id: number;
 }
 export default PartialPayment;

@@ -59,7 +59,6 @@ export default function Masa(props: any) {
   const bolumNo = location.state?.bolumno;
   const [tables, setTables] = useState<masaModel>();
   const [grupKodu, setGrupKodu] = useState("01");
-  const productDetRef: any = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [selectedProductDet, setSelectedProductDet] =
     useState<SelectedProduct>();
@@ -75,13 +74,16 @@ export default function Masa(props: any) {
     type: "count",
   });
   const [ikram, setIkram] = useState(new Map<number, boolean>());
-
+  const [productPopupDetailVisible, setProductPopupDetailVisible] =
+    useState(false);
+  const handleproductPopupDetailVisible = (isVisible: boolean) => {
+    setProductPopupDetailVisible(isVisible);
+  };
   const handlePopupClose = () => {
-    productDetRef.current?.instance.hide();
-    setSelectedProductDet(undefined);
+    handleproductPopupDetailVisible(false);
   };
 
-  const save = () => {
+  const onSaveButton = () => {
     navigate("/bolgeler", { state: { m_kodu: tables?.m_kodu } });
   };
 
@@ -126,18 +128,17 @@ export default function Masa(props: any) {
   };
   const removeFromBasket = (id: number) => {
     const productInBasket = productsInBasket.find((p) => p.id === id);
-    let indexOfProduct;
-    const allProducts = [...productsInBasket];
     if (productInBasket) {
-      indexOfProduct = productsInBasket.indexOf(productInBasket);
+      const allProducts = [...productsInBasket];
+      const indexOfProduct = productsInBasket.indexOf(productInBasket);
       if (indexOfProduct > -1) {
-        console.log(allProducts.splice(indexOfProduct, 1));
+        allProducts.splice(indexOfProduct, 1);
         setProductsInBasket(allProducts);
       }
     }
   };
 
-  const Search = (event: ChangeEvent<HTMLInputElement>) => {
+  const search = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setSearchText(value);
   };
@@ -158,22 +159,21 @@ export default function Masa(props: any) {
     [categories]
   );
   const onclickProduct = (product: Product) => {
-    if (product) {
-      setSelectedProductDet({
-        product: product,
-        count: 1,
-        description: "",
-        property: undefined,
-        id: orderId,
-        totalPrice: product.satis_fiyat,
-      });
-      productDetRef.current?.instance.show();
-    }
+    console.log(product);
+    setSelectedProductDet({
+      product: product,
+      count: 1,
+      description: "",
+      property: undefined,
+      id: orderId,
+      totalPrice: product.satis_fiyat,
+    });
+    handleproductPopupDetailVisible(true);
   };
 
-  const changeOrderDet = async (product: SelectedProduct) => {
+  const changeOrderDet = (product: SelectedProduct) => {
     setSelectedProductDet(product);
-    productDetRef.current?.instance.show();
+    handleproductPopupDetailVisible(true);
   };
 
   const incrementProductCount = (product: SelectedProduct) => {
@@ -228,11 +228,8 @@ export default function Masa(props: any) {
 
   const ProductDetPopupComponent = () => {
     const extraAd = stokExtraList?.map((stok) => stok.ekstra_adi);
-
     if (selectedProductDet) {
       const ikramButton = () => {
-        console.log(ikram.get(selectedProductDet.id));
-
         if (ikram.get(selectedProductDet.id) === false) {
           return (
             <button
@@ -265,7 +262,8 @@ export default function Masa(props: any) {
           container=".dx-viewport"
           width={650}
           height={700}
-          ref={productDetRef}
+          visible={productPopupDetailVisible}
+          onHidden={() => handleproductPopupDetailVisible(false)}
         >
           <Position at="center" my="center" collision="fit" />
           <ToolbarItem
@@ -288,8 +286,6 @@ export default function Masa(props: any) {
               onClick: () => {
                 updateBasket();
                 if (ikram.get(selectedProductDet.id) === undefined) {
-                  console.log(ikram.get(selectedProductDet.id));
-
                   ikramet(selectedProductDet, false);
                 }
                 handlePopupClose();
@@ -376,7 +372,6 @@ export default function Masa(props: any) {
                   }
                   noDataText="seçecek veri yok"
                   onSelectionChanged={(e) => {
-                    console.log(selectedProductDet.property ?? null);
                     const newProductDet = { ...selectedProductDet };
                     newProductDet.property = e.selectedItem ?? null;
                     setSelectedProductDet(newProductDet);
@@ -630,7 +625,7 @@ export default function Masa(props: any) {
           </button>
           <input
             className="ara"
-            onChange={Search}
+            onChange={search}
             placeholder="Ürün Adı veya Barkod ile Arama"
           ></input>
           <button className="main-button">
@@ -650,8 +645,8 @@ export default function Masa(props: any) {
               <div className="slected-products">
                 <div className="basket-container">
                   {productsInBasket.map((product) => (
-                    <Basket
-                      key={product.product.grup_koduS}
+                    <OrdersComponent
+                      key={product.id}
                       product={product}
                       onIncrement={() => incrementProductCount(product)}
                       onDecrement={() => decrementProductCount(product)}
@@ -668,7 +663,7 @@ export default function Masa(props: any) {
               productsInBasket={productsInBasket}
               fastPay={() => fastPay()}
               pay={() => pay()}
-              save={() => save()}
+              save={() => onSaveButton()}
               handleDiscountButton={() => handleDiscountButton()}
             />
           </div>
@@ -727,7 +722,8 @@ interface ProductsProps {
   onclickProduct: (product: Product) => void;
 }
 interface CombinedProps extends CategoriesProps, ProductsProps {}
-const Basket: React.FC<BasketProps> = memo(
+
+const OrdersComponent: React.FC<BasketProps> = memo(
   ({ product, onIncrement, onDecrement, onRemove, onOrderDet, ikram }) => {
     const description = () => {
       if (product.description) {
@@ -740,8 +736,6 @@ const Basket: React.FC<BasketProps> = memo(
         );
       }
     };
-    console.log(ikram.get(product.id));
-
     const totalPrice = () => {
       if (ikram.get(product.id)) {
         return (
@@ -756,7 +750,7 @@ const Basket: React.FC<BasketProps> = memo(
       }
     };
     return (
-      <div className="products-detales" key={product.id}>
+      <div className="products-detales">
         <div className="product-det1">
           <div className="plus-minus">
             <button className="plus-minus-btn" onClick={onIncrement}>
@@ -814,7 +808,6 @@ const Basket: React.FC<BasketProps> = memo(
 );
 const BasketFooter: React.FC<BasketFooterProps> = ({
   totalPrice,
-  productsInBasket,
   fastPay,
   save,
   pay,
@@ -888,8 +881,8 @@ const Categories: React.FC<CombinedProps> = memo(
             onSelectionChanged={onChangeTab}
             selectedIndex={parseInt(grupKodu) - 1}
           >
-            {categories?.map((category) => (
-              <Item title={category.aciklama} key={category.refkodu}>
+            {categories?.map((category, id) => (
+              <Item title={category.aciklama} key={id}>
                 <Products
                   filtredProducts={filtredProducts}
                   onclickProduct={onclickProduct}
@@ -910,8 +903,12 @@ const Products: React.FC<ProductsProps> = ({
   if (filtredProducts) {
     return (
       <div className="products">
-        {filtredProducts.map((product) => (
-          <button className="card" onClick={() => onclickProduct(product)}>
+        {filtredProducts.map((product, id) => (
+          <button
+            className="table-card"
+            onClick={() => onclickProduct(product)}
+            key={id}
+          >
             <span>{product.stok_adi_kisa}</span>
             <span>₺ {product.satis_fiyat}</span>
           </button>
@@ -921,10 +918,10 @@ const Products: React.FC<ProductsProps> = ({
   } else {
     return (
       <div className="products">
-        {products.map((product) => (
+        {products.map((product, id) => (
           <button
-            className="card"
-            key={product.stokno}
+            className="table-card"
+            key={id}
             onClick={() => onclickProduct(product)}
           >
             <span>{product.stok_adi_kisa}</span>

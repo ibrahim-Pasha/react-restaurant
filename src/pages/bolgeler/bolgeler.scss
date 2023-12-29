@@ -7,10 +7,12 @@
 }
 
 .card {
-  width: 13% !important;
-  height: 150px !important;
-  background-color: rgb(40, 160, 207) !important;
-  color: #ffff;
+ // background-color: rgb(255, 255, 255) !important;
+  color: 0000;
+  box-shadow: rgba(0, 0, 80, 0.2) 0px 7px 29px 0px;
+  width: 18% !important;
+  height: 115px !important;
+  background-color: #ffff;
 }
 
 .card-content {
@@ -47,15 +49,15 @@
 }
 
 .card-header {
-  color: rgb(255, 0, 0);
   font-weight: 600;
   font-size: large;
   height: 20px;
-  background-color: #ffff;
   align-self: center;
   width: 96px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  border-radius: 5px;
+  justify-content: center;  
+  border-width: 0 0 1px 0;
+  border-style: groove;
+  border-color:#d3d3d3 ;
 }
