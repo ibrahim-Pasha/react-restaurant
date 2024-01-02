@@ -121,12 +121,42 @@ button {
   border-radius: 10px;
   display: flex;
   align-items: flex-start;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-around;
-  box-shadow: rgba(0, 0, 104, 0.2) 0px 7px 29px 0px;
+  box-shadow: rgb(1 1 20 / 20%) 10px 7px 29px 4px;
   background-color: #ffff;
+  position: relative;
+
 }
 
+.table-card-button{
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+  width: 100%;
+  height: 115px ;
+  border-width: 0;
+  border-radius: 10px;
+  background-color: #ffff;
+
+  justify-content: space-around;
+}
+.table-card-button:hover{
+  background-color: #d3d3d3;
+}
+.table-card-button-det{
+  height: 55px ;
+  width: 10%;
+position: absolute;
+right: 1px;
+border-style: none;
+background-color: #ffff;
+border-radius: 5px;
+}
+
+.table-card-button-det:hover{
+  background-color: #d3d3d3;
+}
 .products {
   width: 100%;
   display: flex;
@@ -162,6 +192,7 @@ button {
   align-items: center;
   border-bottom: ridge;
   padding: 15px;
+  height: 150px;
 }
 
 .product-count {

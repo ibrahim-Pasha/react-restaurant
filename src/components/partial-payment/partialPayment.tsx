@@ -1,8 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Product } from "../../models";
 import "./partialPayment.scss";
-import React, { useEffect, useState } from "react";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import React, { useCallback, useEffect, useState } from "react";
+import { faArrowLeft, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const PartialPayment: React.FC<partialPaymentprops> = ({
   totalPrice,
@@ -14,7 +14,6 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
   const [matList, setMatList] = useState<payList[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<SelectedProduct[]>([]);
   const [payId, setPayId] = useState(0);
-  const [priceWillPay, setPriceWillPay] = useState(0);
   const handleButtonClick = (value: number) => {
     if (totalPrice === totalValue) {
       setEnteredValue(value.toString());
@@ -43,15 +42,12 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
       setEnteredValue(totalPrice.toString());
     }
   };
-  const calculateTotal = (value: string) => {
+  const calculateTotal = useCallback((value: string) => {
     const enteredNumber = parseFloat(value);
     if (!isNaN(enteredNumber)) {
       setTotalValue(enteredNumber);
-    } else {
-      //setTotalValue(matList);
-      setEnteredValue(totalValue.toString());
     }
-  };
+  }, []);
   const handleSelectOrder = (order: SelectedProduct) => {
     if (paymnt.get(order)) {
       paymnt.delete(order);
@@ -102,14 +98,15 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
         const allSelectedOrders = matList;
         allSelectedOrders.push(selectedOrder);
         setMatList(allSelectedOrders);
-        setTotalValue((prevTotal) => prevTotal - parseFloat(enteredValue));
+
+        const totalPriceToPay = allSelectedOrders
+          .map((mat) => mat.price)
+          .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+        setEnteredValue((totalPrice - totalPriceToPay).toString());
+        calculateTotal((totalPrice - totalPriceToPay).toString());
       }
       setSelectedOrders([]);
     }
-    const totalPriceToPay = matList
-      .map((mat) => mat.price)
-      .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-    setPriceWillPay(totalPriceToPay);
   };
   console.log(enteredValue, totalValue);
 
@@ -117,16 +114,16 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
     const matToRemove = matList.find((mat) => mat.id === matId);
     if (matToRemove) {
       const indexOfMatToRemove = matList.indexOf(matToRemove);
-      matList.splice(indexOfMatToRemove, 1);
-      const allMats = matList;
-      console.log(allMats);
-      setMatList(allMats);
+      if (indexOfMatToRemove > -1) {
+        const allMats = [...matList];
+        allMats.splice(indexOfMatToRemove, 1);
+        setMatList(allMats);
+        console.log(matList);
+      }
     }
   };
   console.log(matList);
   useEffect(() => {
-    setTotalValue(totalPrice);
-
     const handleKeyDown = (event: any) => {
       if (event.key >= "0" && event.key <= "9") {
         setEnteredValue(enteredValue + event.key);
@@ -245,15 +242,12 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
                   className="numeric-button"
                   onClick={handleDeleteButtonClick}
                 >
-                  DEL
+                  <FontAwesomeIcon
+                    icon={faArrowLeft}
+                    size="xl"
+                    style={{ color: "#000000" }}
+                  />
                 </button>
-              </div>
-              <div className="pad-keys">
-                <button className="pad-key">
-                  <b>,</b>
-                </button>
-                <button className="pad-key">0</button>
-                <button className="pad-key">DEL</button>{" "}
               </div>
             </div>
           </div>

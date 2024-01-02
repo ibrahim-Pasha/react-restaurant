@@ -82,12 +82,10 @@ export default function Masa(props: any) {
   const handlePopupClose = () => {
     handleproductPopupDetailVisible(false);
   };
-
   const onSaveButton = () => {
     navigate("/bolgeler", { state: { m_kodu: tables?.m_kodu } });
   };
-
-  const calculateTotal = (value: SelectedProduct[]) => {
+  const calculateTotal = useCallback((value: SelectedProduct[]) => {
     const pricesInBasket = value.map((product) => product.totalPrice);
     setTotalPrice(
       pricesInBasket.reduce(
@@ -95,24 +93,22 @@ export default function Masa(props: any) {
         0
       )
     );
-  };
-
-  const updateBasket = () => {
+  }, []);
+  const updateBasket = (selectedProduct: SelectedProduct) => {
     const productInBasket = productsInBasket.find(
-      (product) => product.id === selectedProductDet?.id
+      (product) => product.id === selectedProduct?.id
     );
-    if (productInBasket && selectedProductDet) {
-      productInBasket.count = selectedProductDet.count;
-      productInBasket.description = selectedProductDet.description;
-      productInBasket.product = selectedProductDet.product;
-      productInBasket.property = selectedProductDet.property;
-      productInBasket.totalPrice = selectedProductDet.totalPrice;
+    if (productInBasket && selectedProduct) {
+      productInBasket.count = selectedProduct.count;
+      productInBasket.description = selectedProduct.description;
+      productInBasket.product = selectedProduct.product;
+      productInBasket.property = selectedProduct.property;
+      productInBasket.totalPrice = selectedProduct.totalPrice;
       const allProductsInBasket: SelectedProduct[] = [...productsInBasket];
       setProductsInBasket(allProductsInBasket);
     } else {
       const id = orderId + 1;
       setOrderId(id);
-      const selectedProduct = selectedProductDet;
       if (selectedProduct) {
         selectedProduct.id = orderId;
         const clickedProdcut: SelectedProduct = selectedProduct;
@@ -137,12 +133,10 @@ export default function Masa(props: any) {
       }
     }
   };
-
   const search = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.currentTarget.value;
     setSearchText(value);
   };
-
   const onChangeTab = useCallback(
     (e: any) => {
       const selectedTab = e.addedItems[0];
@@ -158,24 +152,32 @@ export default function Masa(props: any) {
     },
     [categories]
   );
-  const onclickProduct = (product: Product) => {
-    console.log(product);
-    setSelectedProductDet({
+  const onclickProduct = (product: Product, openDetailPopup: boolean) => {
+    setOrderId(orderId + 1);
+    const selectedProduct: SelectedProduct = {
       product: product,
       count: 1,
-      description: "",
-      property: undefined,
       id: orderId,
       totalPrice: product.satis_fiyat,
-    });
-    handleproductPopupDetailVisible(true);
-  };
+      description: "",
+      property: undefined,
+    };
+    setSelectedProductDet(selectedProduct);
 
+    if (openDetailPopup) {
+      handleproductPopupDetailVisible(true);
+    } else {
+      if (ikram.get(selectedProduct.id) === undefined) {
+        ikramet(selectedProduct, false);
+      }
+      updateBasket(selectedProduct);
+    }
+    console.log(selectedProductDet, orderId);
+  };
   const changeOrderDet = (product: SelectedProduct) => {
     setSelectedProductDet(product);
     handleproductPopupDetailVisible(true);
   };
-
   const incrementProductCount = (product: SelectedProduct) => {
     product.count++;
     product.totalPrice += product.product.satis_fiyat;
@@ -284,7 +286,7 @@ export default function Masa(props: any) {
             options={{
               text: "Kaydet",
               onClick: () => {
-                updateBasket();
+                updateBasket(selectedProductDet);
                 if (ikram.get(selectedProductDet.id) === undefined) {
                   ikramet(selectedProductDet, false);
                 }
@@ -587,6 +589,7 @@ export default function Masa(props: any) {
     grupKodu,
     searchText,
     selectedProductDet?.product.stokno,
+    calculateTotal,
   ]);
 
   return (
@@ -719,7 +722,7 @@ interface CategoriesProps {
 interface ProductsProps {
   filtredProducts: Product[] | null;
   products: Product[];
-  onclickProduct: (product: Product) => void;
+  onclickProduct: (product: Product, openDetailPopup: boolean) => void;
 }
 interface CombinedProps extends CategoriesProps, ProductsProps {}
 
@@ -904,14 +907,27 @@ const Products: React.FC<ProductsProps> = ({
     return (
       <div className="products">
         {filtredProducts.map((product, id) => (
-          <button
-            className="table-card"
-            onClick={() => onclickProduct(product)}
-            key={id}
-          >
-            <span>{product.stok_adi_kisa}</span>
-            <span>₺ {product.satis_fiyat}</span>
-          </button>
+          <div className="table-card">
+            <button
+              className="table-card-button"
+              key={id}
+              onClick={() => onclickProduct(product, false)}
+            >
+              <span>{product.stok_adi_kisa}</span>
+              <span>₺ {product.satis_fiyat}</span>
+            </button>
+            <button
+              className="table-card-button-det"
+              onClick={() => onclickProduct(product, true)}
+            >
+              {" "}
+              <FontAwesomeIcon
+                icon={faEllipsisVertical}
+                size="lg"
+                style={{ color: "#ec6341" }}
+              />
+            </button>
+          </div>
         ))}
       </div>
     );
@@ -919,14 +935,27 @@ const Products: React.FC<ProductsProps> = ({
     return (
       <div className="products">
         {products.map((product, id) => (
-          <button
-            className="table-card"
-            key={id}
-            onClick={() => onclickProduct(product)}
-          >
-            <span>{product.stok_adi_kisa}</span>
-            <span>₺ {product.satis_fiyat}</span>
-          </button>
+          <div className="table-card">
+            <button
+              className="table-card-button"
+              key={id}
+              onClick={() => onclickProduct(product, false)}
+            >
+              <span>{product.stok_adi_kisa}</span>
+              <span>₺ {product.satis_fiyat}</span>
+            </button>
+            <button
+              className="table-card-button-det"
+              onClick={() => onclickProduct(product, true)}
+            >
+              {" "}
+              <FontAwesomeIcon
+                icon={faEllipsisVertical}
+                size="lg"
+                style={{ color: "#ec6341" }}
+              />
+            </button>
+          </div>
         ))}
       </div>
     );
