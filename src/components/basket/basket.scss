@@ -1,0 +1,81 @@
+.basket-contant{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+  .basket-header {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+  }
+  .basket-container {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+  .basket-footer {
+    display: flex;
+    flex-flow: column;
+  }
+  .bsket-arrow-btn {
+    align-self: flex-end;
+    width: 10%;
+    height: 40px;
+    border-width: 0px;
+    background-color: white;
+  }
+  .tutar {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    padding: 18px;
+  }
+  
+  .basket-buttons {
+    display: flex;
+    flex-flow: row;
+    padding: 15px;
+    justify-content: space-around;
+    height: 80px;
+  }
+  .tag-btn {
+    width: 20%;
+    border-width: 0px;
+    background-color: rgb(230, 230, 230);
+    border-radius: 5px;
+  }
+  
+  .save-btn {
+    width: 75%;
+    background-color: #e32b2b;
+    color: white;
+    border-width: 0px;
+    font-size: large;
+    border-radius: 5px;
+  }
+  .pay-buttons {
+    display: flex;
+    flex-direction: row;
+    width: 600px;
+  }
+  .pay-button {
+    width: 50%;
+  
+    background-color: rgb(76, 175, 76);
+    color: white;
+    border-width: 0px;
+    font-size: medium;
+    border-radius: 5px;
+    margin: 0px 5px 0px 5px;
+  }
+  
+  .fast-pay-button {
+    width: 50%;
+    background-color: rgb(243, 243, 243);
+    color: gold;
+    border-width: 0px;
+    font-size: medium;
+    border-radius: 5px;
+    margin: 0px 5px 0px 0px;
+    font-weight: 700;
+  }

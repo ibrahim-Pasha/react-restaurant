@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Product } from "../../models";
 import "./partialPayment.scss";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { memo, useCallback, useEffect, useState } from "react";
 import { faArrowLeft, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const PartialPayment: React.FC<partialPaymentprops> = ({
@@ -325,4 +325,4 @@ interface payList {
   price: number;
   id: number;
 }
-export default PartialPayment;
+export default memo(PartialPayment);

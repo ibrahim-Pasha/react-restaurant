@@ -7,3 +7,7 @@ export { default as ChangePasswordForm } from "./change-password-form/ChangePass
 export { default as SideNavigationMenu } from "./side-navigation-menu/SideNavigationMenu";
 export { default as Discount } from "./numerik-key-pad/discount";
 export { default as PartialPayment } from "./partial-payment/partialPayment";
+export { default as Stok } from "./stok/stok";
+export { default as ProductsComponent } from "./products/products";
+export { default as Basket } from "./basket/basket";
+export { default as TableHeader } from "./table-header/tableHeader";
