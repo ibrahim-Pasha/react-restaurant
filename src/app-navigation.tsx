@@ -10,6 +10,10 @@ export const navigation = [
     icon: "home",
   },
   {
+    text: "Aktif Siparişler",
+    path: "/active_orders",
+  },
+  {
     text: "Examples",
     icon: "folder",
     items: [

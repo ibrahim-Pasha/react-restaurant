@@ -3,7 +3,7 @@ import appInfo from "./app-info";
 import routes from "./app-routes";
 import { SideNavOuterToolbar as SideNavBarLayout } from "./layouts";
 import { Footer } from "./components";
-import { Bolgeler, Masa } from "./pages";
+import { ActiveOrders, Bolgeler, Masa } from "./pages";
 
 export default function Content() {
   return (
@@ -18,6 +18,10 @@ export default function Content() {
           element={<Bolgeler currentPath={"/bolgeler"} />}
         />
         <Route path="/masa" element={<Masa currentPath={"/masa"} />} />
+        <Route
+          path="/active_orders"
+          element={<ActiveOrders currentPath={"/active_orders"} />}
+        />
       </Routes>
       <Footer>
         Copyright © 2011-{new Date().getFullYear()} {appInfo.title} Inc.

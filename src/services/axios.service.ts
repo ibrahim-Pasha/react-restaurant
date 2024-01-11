@@ -44,13 +44,14 @@ async function get<T>(
   }
 }
 
-async function post<T>(url: string, payload: Object) {
+async function post<T>(url: string,  conf?: { payload?: Object, headers?: object }) {
   try {
     const result = await client.request<T, AxiosResponse<T>>({
       method: "POST",
       url,
       responseType: "json",
-      data: payload,
+      data: conf?.payload,
+      headers:conf?.headers
     });
 
     return result.data;
