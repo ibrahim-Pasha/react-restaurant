@@ -14,13 +14,12 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
   const [matList, setMatList] = useState<payList[]>([]);
   const [selectedOrders, setSelectedOrders] = useState<SelectedProduct[]>([]);
   const [payId, setPayId] = useState(0);
+  const [totalPriceProp, setTotalPriceProp] = useState(0);
   const handleButtonClick = (value: number) => {
-    if (totalPrice === totalValue) {
+    if (totalValue === parseFloat(enteredValue)) {
       setEnteredValue(value.toString());
-      calculateTotal(value.toString());
     } else {
       setEnteredValue(enteredValue + value);
-      calculateTotal(enteredValue + value);
     }
   };
   const handleDecimalButtonClick = () => {
@@ -29,17 +28,14 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
     }
   };
   const handleDeleteButtonClick = () => {
-    if (totalPrice !== totalValue) {
+    if (totalValue !== parseFloat(enteredValue)) {
       if (enteredValue.length === 1) {
-        setEnteredValue(totalPrice.toString());
-        calculateTotal(totalPrice.toString());
+        setEnteredValue(totalValue.toString());
       } else {
         setEnteredValue(enteredValue.slice(0, -1));
-        calculateTotal(enteredValue.slice(0, -1));
       }
     } else {
-      setTotalValue(totalPrice);
-      setEnteredValue(totalPrice.toString());
+      setEnteredValue(totalValue.toString());
     }
   };
   const calculateTotal = useCallback((value: string) => {
@@ -72,8 +68,6 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
     if (totalValue > 0) {
       setPayId(payId + 1);
       if (selectedOrders.length > 0) {
-        console.log(selectedOrders);
-
         const price = selectedOrders
           .map((order) => order.totalPrice)
           .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
@@ -86,30 +80,29 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
         const allSelectedOrders = matList;
         allSelectedOrders.push(selectedOrder);
         setMatList(allSelectedOrders);
-        setTotalValue((prevValue) => prevValue - price);
-        setEnteredValue("");
+        setEnteredValue((totalPrice - price).toString());
+        calculateTotal((totalPrice - price).toString());
       } else {
         const selectedOrder: payList = {
           id: payId,
           selectedOrder: selectedOrders,
           type: type,
-          price: totalValue,
+          price: parseFloat(enteredValue),
         };
         const allSelectedOrders = matList;
         allSelectedOrders.push(selectedOrder);
         setMatList(allSelectedOrders);
 
-        const totalPriceToPay = allSelectedOrders
+        const totalPricePayed = allSelectedOrders
           .map((mat) => mat.price)
           .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-        setEnteredValue((totalPrice - totalPriceToPay).toString());
-        calculateTotal((totalPrice - totalPriceToPay).toString());
+        setTotalValue(totalPrice - totalPricePayed);
+        setEnteredValue((totalPrice - totalPricePayed).toString());
+        calculateTotal((totalPrice - totalPricePayed).toString());
       }
       setSelectedOrders([]);
     }
   };
-  console.log(enteredValue, totalValue);
-
   const onRemovePay = (matId: number) => {
     const matToRemove = matList.find((mat) => mat.id === matId);
     if (matToRemove) {
@@ -118,24 +111,35 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
         const allMats = [...matList];
         allMats.splice(indexOfMatToRemove, 1);
         setMatList(allMats);
-        console.log(matList);
+        setTotalValue((prevValue) => prevValue + matToRemove.price);
+        setEnteredValue((prevValue) =>
+          (parseFloat(prevValue) + matToRemove.price).toString()
+        );
+        console.log(matToRemove.price);
       }
     }
   };
-  console.log(matList);
   useEffect(() => {
+    if (totalPriceProp !== totalPrice) {
+      setTotalPriceProp(totalPrice);
+      setTotalValue(totalPrice);
+      setEnteredValue(totalPrice.toString());
+      console.log("tot Prop" + totalPriceProp, "total price" + totalPrice);
+    }
+
     const handleKeyDown = (event: any) => {
       if (event.key >= "0" && event.key <= "9") {
         setEnteredValue(enteredValue + event.key);
-        calculateTotal(enteredValue + event.key);
       }
-      console.log(event.key);
     };
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [totalPrice, calculateTotal, enteredValue]);
+  }, [calculateTotal, enteredValue, totalPrice, totalPriceProp]);
+  console.log(enteredValue);
+  console.log(totalValue);
+
   return (
     <div className="pay-contant">
       <div className="select-product-topay">
@@ -208,7 +212,7 @@ const PartialPayment: React.FC<partialPaymentprops> = ({
             </div>
             <div>
               <span style={{ float: "right" }}>
-                Ödenecek Tutar : {totalValue.toFixed(2)}
+                Ödenecek Tutar : {parseFloat(enteredValue).toFixed(2)}
               </span>
             </div>
           </div>

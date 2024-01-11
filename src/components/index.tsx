@@ -5,7 +5,7 @@ export { default as ResetPasswordForm } from "./reset-password-form/ResetPasswor
 export { default as CreateAccountForm } from "./create-account-form/CreateAccountForm";
 export { default as ChangePasswordForm } from "./change-password-form/ChangePasswordForm";
 export { default as SideNavigationMenu } from "./side-navigation-menu/SideNavigationMenu";
-export { default as Discount } from "./numerik-key-pad/discount";
+export { default as Discount } from "./discount/discount";
 export { default as PartialPayment } from "./partial-payment/partialPayment";
 export { default as Stok } from "./stok/stok";
 export { default as ProductsComponent } from "./products/products";
