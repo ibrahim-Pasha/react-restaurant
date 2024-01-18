@@ -12,8 +12,12 @@ import Content from "./Content";
 import UnauthenticatedContent from "./UnauthenticatedContent";
 import { SideNavProvider } from "./contexts/side-nav";
 import { FooterProvider } from "./contexts/footer";
+import config from "devextreme/core/config";
 
 function App() {
+  config({
+    defaultCurrency: "TRY",
+  });
   const { user, loading } = useAuth();
 
   if (loading) {

@@ -22,7 +22,7 @@ export default function SideNavOuterToolbar({
   const { isXSmall, isLarge } = useScreenSize();
   const [patchCssClass, onMenuReady] = useMenuPatch();
   const [menuStatus, setMenuStatus] = useState(
-    isLarge ? MenuStatus.Opened : MenuStatus.Closed,
+    isLarge ? MenuStatus.Opened : MenuStatus.Closed
   );
   const { navigationData } = useNavigation();
   const { trigger, opend } = useSideNav();
@@ -32,7 +32,7 @@ export default function SideNavOuterToolbar({
     setMenuStatus((prevMenuStatus) =>
       prevMenuStatus === MenuStatus.Closed
         ? MenuStatus.Opened
-        : MenuStatus.Closed,
+        : MenuStatus.Closed
     );
     event?.stopPropagation();
   }, []);
@@ -41,7 +41,7 @@ export default function SideNavOuterToolbar({
     setMenuStatus((prevMenuStatus) =>
       prevMenuStatus === MenuStatus.Closed
         ? MenuStatus.TemporaryOpened
-        : prevMenuStatus,
+        : prevMenuStatus
     );
   }, []);
 
@@ -49,7 +49,7 @@ export default function SideNavOuterToolbar({
     setMenuStatus((prevMenuStatus) =>
       prevMenuStatus !== MenuStatus.Closed && !isLarge
         ? MenuStatus.Closed
-        : prevMenuStatus,
+        : prevMenuStatus
     );
     return menuStatus === MenuStatus.Closed ? true : false;
   }, [isLarge, menuStatus]);
@@ -73,23 +73,16 @@ export default function SideNavOuterToolbar({
         event?.stopPropagation();
       }
     },
-    [navigate, menuStatus, isLarge],
+    [navigate, menuStatus, isLarge]
   );
 
   useEffect(() => {
-    console.log(navigationData.currentPath);
-
     if (trigger)
-      if (navigationData.currentPath === "/masa") {
-        trigger(false);
-        drawerRef.current?.instance.option("minSize", 0);
+      if (navigationData.currentPath === "/masa" || "/active_orders") {
+        setMenuStatus(MenuStatus.Closed);
       } else if (navigationData.currentPath === "/bolgeler") {
-        trigger(true);
-        drawerRef.current?.instance.option("minSize", 60);
+        setMenuStatus(MenuStatus.Opened);
       }
-    if (opend) {
-      setMenuStatus(MenuStatus.Opened);
-    } else setMenuStatus(MenuStatus.Closed);
   }, [navigationData.currentPath, opend, trigger]);
 
   return (
@@ -101,7 +94,7 @@ export default function SideNavOuterToolbar({
         closeOnOutsideClick={onOutsideClick}
         openedStateMode={isLarge ? "shrink" : "overlap"}
         revealMode={isXSmall ? "slide" : "expand"}
-        minSize={isXSmall ? 0 : 60}
+        minSize={0}
         maxSize={250}
         shading={isLarge ? false : true}
         opened={menuStatus === MenuStatus.Closed ? false : true}

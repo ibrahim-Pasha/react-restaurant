@@ -23,12 +23,12 @@ client.interceptors.response.use(
     } else {
       throw error;
     }
-  },
+  }
 );
 
 async function get<T>(
   url: string,
-  conf?: { params?: object; headers?: object },
+  conf?: { params?: object; headers?: object }
 ) {
   try {
     const result = await client.request<T, AxiosResponse<T>>({
@@ -44,14 +44,18 @@ async function get<T>(
   }
 }
 
-async function post<T>(url: string,  conf?: { payload?: Object, headers?: object }) {
+async function post<T>(
+  url: string,
+  conf?: { payload?: Object; headers?: object; params?: object }
+) {
   try {
     const result = await client.request<T, AxiosResponse<T>>({
       method: "POST",
       url,
       responseType: "json",
       data: conf?.payload,
-      headers:conf?.headers
+      headers: conf?.headers,
+      params: conf?.params,
     });
 
     return result.data;
