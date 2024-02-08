@@ -1,4 +1,4 @@
-export class Bolum {
+export class Region {
   Message?: string;
   Data: {
     bolumno: number;

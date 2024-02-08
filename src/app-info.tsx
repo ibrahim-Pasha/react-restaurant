@@ -1,4 +1,4 @@
 const appInfo = {
-  title: "Ravi Restaurant",
+  title: "React Restaurant",
 };
 export default appInfo;

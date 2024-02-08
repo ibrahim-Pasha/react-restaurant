@@ -1,4 +1,4 @@
-export class Masa {
+export class Table {
   masano: number;
   bolumno: number;
   m_durum: number;

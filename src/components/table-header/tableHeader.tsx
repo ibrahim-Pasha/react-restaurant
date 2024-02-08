@@ -9,14 +9,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Masa as masaModel } from "../../models";
+import { Table as tableModel } from "../../models";
 
 const TableHeader: React.FC<HeaderProps> = ({ tables, search }) => {
   const navigate = useNavigate();
   return (
     <div className="header">
       <i className="fa-solid fa-arrow-left"></i>
-      <button onClick={() => navigate("/bolgeler")} className="main-button">
+      <button onClick={() => navigate("/regions")} className="main-button">
         <FontAwesomeIcon
           icon={faArrowLeft}
           size="xl"
@@ -26,7 +26,7 @@ const TableHeader: React.FC<HeaderProps> = ({ tables, search }) => {
       <input
         className="tableName"
         readOnly
-        defaultValue={tables && `Masa ${tables?.m_kodu}`}
+        defaultValue={tables && `Table ${tables?.m_kodu}`}
       ></input>
       <button className="main-button">
         <FontAwesomeIcon size="xl" icon={faNotesMedical} />
@@ -44,7 +44,7 @@ const TableHeader: React.FC<HeaderProps> = ({ tables, search }) => {
       <input
         className="ara"
         onChange={search}
-        placeholder="Ürün Adı veya Barkod ile Arama"
+        placeholder="Search using product name or barcode"
       ></input>
       <button className="main-button">
         <FontAwesomeIcon size="xl" icon={faUserGroup} />
@@ -56,7 +56,7 @@ const TableHeader: React.FC<HeaderProps> = ({ tables, search }) => {
   );
 };
 interface HeaderProps {
-  tables?: masaModel;
+  tables?: tableModel;
   search: (e: any) => void;
 }
 export default TableHeader;

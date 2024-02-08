@@ -50,7 +50,7 @@ const Basket: React.FC<BasketProps> = ({
           />
         </button>
         <div className="tutar">
-          <span>Toplam Tutar</span>
+          <span>Total</span>
           <span>₺{totalPrice}</span>
         </div>
         <div className="basket-buttons">
@@ -64,7 +64,7 @@ const Basket: React.FC<BasketProps> = ({
           {totalPrice > 0 ? (
             <div className="pay-buttons">
               <button className="pay-button" onClick={() => pay()}>
-                Öde ₺{totalPrice}
+                Pay ₺{totalPrice}
               </button>
 
               <button className="fast-pay-button" onClick={() => fastPay()}>
@@ -73,12 +73,12 @@ const Basket: React.FC<BasketProps> = ({
                   size="lg"
                   style={{ color: "#e7eb00" }}
                 />{" "}
-                Hızlı Öde{" "}
+                Fast Pay{" "}
               </button>
             </div>
           ) : null}
           <button className="save-btn" onClick={() => save()}>
-            Kaydet
+            Save
           </button>
         </div>
       </div>

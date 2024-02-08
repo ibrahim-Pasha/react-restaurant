@@ -9,19 +9,19 @@ const headers = {
 const getAll = (params?: object): Promise<ReqData> => {
   let result$ = AxiosService.get<ReqData>(
     `https://ravi-mobil-demo.petekyazilim.com.tr/staj/get-masa-liste?`,
-    { headers: headers, params: params },
+    { headers: headers, params: params }
   );
   return result$;
 };
 const getSiparisList = (params?: object): Promise<ReqData> => {
   let result$ = AxiosService.get<ReqData>(
     `http://ravi-mobil-demo.petekyazilim.com.tr/ravi-res/get-siparis-detay-liste?`,
-    { headers: headers, params: params },
+    { headers: headers, params: params }
   );
   return result$;
 };
 
-export const MasaService = {
+export const TableService = {
   getAll,
   getSiparisList,
 };

@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from "react";
-import "./bolgeler.scss";
+import "./regions.scss";
 import TabPanel, { Item } from "devextreme-react/tab-panel";
 import Button from "devextreme-react/button";
 import { useNavigate } from "react-router-dom";
 import { useNavigation } from "../../contexts/navigation";
-import { Bolum, Masa, ReqData } from "../../models";
-import { BolumService, MasaService } from "../../services";
-export default function Bolgeler(props: any) {
+import { Region, Table, ReqData } from "../../models";
+import { RegionService, TableService } from "../../services";
+export default function Regions(props: any) {
   const [tables, setTables] = useState<ReqData>();
-  const [bolumlar, setBolumlar] = useState<Bolum>();
+  const [bolumlar, setBolumlar] = useState<Region>();
   const navigate = useNavigate();
   const [bolumNo, setBolumNo] = useState(1);
   const { currentPath } = props;
   const { setNavigationData } = useNavigation();
   const buttonClick = (m_kodu: number) => {
-    navigate("/masa", { state: { m_kodu: m_kodu, bolumno: bolumNo } });
+    navigate("/table", { state: { m_kodu: m_kodu, bolumno: bolumNo } });
   };
   const onChangeTab = (e: any) => {
     const selectedTab = e.addedItems[0];
     if (selectedTab) {
       const selectedBolumTitle = selectedTab.title;
       const selectedBolumNo = bolumlar?.Data.find(
-        (data) => data.bolum_adi === selectedBolumTitle,
+        (data) => data.bolum_adi === selectedBolumTitle
       )?.bolumno;
       if (selectedBolumNo) {
         setBolumNo(selectedBolumNo);
@@ -33,7 +33,7 @@ export default function Bolgeler(props: any) {
     const currentDate = new Date();
     const timeDifference = currentDate.getTime() - date.getTime();
     const remainingMinutes = Math.floor(
-      (timeDifference % (60 * 60 * 1000)) / (60 * 1000),
+      (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
     );
     const hoursDifference = Math.floor(timeDifference / (60 * 60 * 1000));
 
@@ -43,9 +43,9 @@ export default function Bolgeler(props: any) {
     if (setNavigationData) {
       setNavigationData({ currentPath: currentPath });
     }
-    const Masalar$ = MasaService.getAll({ bolumno: bolumNo });
-    const Bolumlar$ = BolumService.getAll();
-    Promise.all([Masalar$, Bolumlar$]).then((results) => {
+    const Tables$ = TableService.getAll({ bolumno: bolumNo });
+    const Regions$ = RegionService.getAll();
+    Promise.all([Tables$, Regions$]).then((results) => {
       setTables(results[0]);
       setBolumlar(results[1]);
     });
@@ -53,7 +53,7 @@ export default function Bolgeler(props: any) {
   return (
     <React.Fragment>
       <div className={"contant-header"}>
-        <span className="header">Bölgeler</span>
+        <span className="header">Reagions</span>
       </div>
 
       <TabPanel onSelectionChanged={onChangeTab}>
@@ -61,23 +61,23 @@ export default function Bolgeler(props: any) {
           return (
             <Item title={s.bolum_adi} key={s.bolumno}>
               <div className="main-div">
-                {tables?.Data?.map((t: Masa) => (
+                {tables?.Data?.map((t: Table) => (
                   <Button
                     key={t.masano}
-                    aria-label={`Masa ${t.m_kodu}`}
+                    aria-label={`Table ${t.m_kodu}`}
                     className="card"
                     onClick={() => buttonClick(t.m_kodu)}
                   >
                     <div className="card-content">
                       <div className="card-header">
-                        <span>Masa {t.m_kodu}</span>{" "}
+                        <span>Table {t.m_kodu}</span>{" "}
                       </div>
-                      <div className="">Tutar : {t.MasaTutar}</div>
+                      <div className="">Total : {t.MasaTutar}</div>
                       <div className="card-footer">
                         <div>{`${calculateDate(t.m_tarih).hours} s ${
                           calculateDate(t.m_tarih).minutes
                         } dk`}</div>
-                        <div> Fiş no : {t.fisno}</div>
+                        <div> no : {t.fisno}</div>
                       </div>
                     </div>
                   </Button>

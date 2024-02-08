@@ -9,11 +9,11 @@ const headers = {
 const getAll = (): Promise<ReqData> => {
   let result$ = AxiosService.get<ReqData>(
     `https://ravi-mobil-demo.petekyazilim.com.tr/staj/get-bolum-liste`,
-    { headers: headers },
+    { headers: headers }
   );
   return result$;
 };
 
-export const BolumService = {
+export const RegionService = {
   getAll,
 };

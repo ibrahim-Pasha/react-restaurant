@@ -3,7 +3,7 @@ import { useNavigation } from "../../contexts/navigation";
 import { DataGrid, TabPanel } from "devextreme-react";
 import { Button, Column, Pager, Paging } from "devextreme-react/data-grid";
 import "./active-orders.scss";
-import { ActiveOrdersSevice } from "../../services";
+import { ActiveOrdersSevice, ToastService } from "../../services";
 import { ActiveOrders } from "../../models";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleInfo, faPrint } from "@fortawesome/free-solid-svg-icons";
@@ -14,50 +14,56 @@ export default function (props: any) {
   const { currentPath } = props;
   const [activeOrders, setActiceOrders] = useState<ActiveOrders>();
   const buttonColumnRender = (data: any) => {
-    const orderDate: Date = new Date(data.data.Baslik.sip_tarih);
+    const orderDate: Date = new Date(data.data.Baslik.son_tarih);
     const currentDate = new Date();
-    let isDeliverOrderButtonDisabled = true;
     if (orderDate) {
-      const timeDifference = currentDate.getTime() - orderDate.getTime();
-      if (timeDifference < 60000) {
-        setTimeout(() => {
-          isDeliverOrderButtonDisabled = false;
-        }, timeDifference);
-      } else isDeliverOrderButtonDisabled = false;
-    }
-    console.log(isDeliverOrderButtonDisabled);
+      const sendOrderOut = (params: object) => {
+        const timeDifference = currentDate.getTime() - orderDate.getTime();
+        if (timeDifference < 120000) {
+          ToastService.showToast("error", "iki dakika süre bekleyiniz");
+        } else
+          ActiveOrdersSevice.sendOrderOut(params).then(() => updateOrders());
+      };
+      const deliverOrder = (params: object) => {
+        const timeDifference = currentDate.getTime() - orderDate.getTime();
+        console.log(timeDifference);
+        if (timeDifference < 120000) {
+          ToastService.showToast("error", "iki dakika süre bekleyiniz");
+        } else
+          ActiveOrdersSevice.deliverOrder(params).then(() => updateOrders());
+      };
 
-    const durumTipi = data.data.Baslik.durum_tip;
-    const orderParameters = {
-      sMarket: data.data.Baslik.smarketno,
-      sipId: data.data.Baslik.ettn_no,
-    };
-    if (durumTipi === 1) {
-      return (
-        <div>
-          <button key="cancel" className="cancel-button">
-            iptal et
-          </button>
+      const durumTipi = data.data.Baslik.durum_tip;
+      const orderParameters = {
+        sMarket: data.data.Baslik.smarketno,
+        sipId: data.data.Baslik.ettn_no,
+      };
+      if (durumTipi === 1) {
+        return (
+          <div className="status-buttons">
+            <button key="cancel" className="cancel-button">
+              cancel
+            </button>
+            <button
+              key="accept"
+              className="accept-button"
+              onClick={() => sendOrderOut(orderParameters)}
+            >
+              Send Order Out
+            </button>
+          </div>
+        );
+      } else if (durumTipi === 3) {
+        return (
           <button
-            key="accept"
+            key="deliver"
             className="accept-button"
-            onClick={() => sendOrderOut(orderParameters)}
+            onClick={() => deliverOrder(orderParameters)}
           >
-            Yola çıkar
+            Deliver Order
           </button>
-        </div>
-      );
-    } else if (durumTipi === 3) {
-      return (
-        <button
-          key="deliver"
-          className="accept-button"
-          onClick={() => deliverOrder(orderParameters)}
-          disabled={isDeliverOrderButtonDisabled}
-        >
-          Teslim et
-        </button>
-      );
+        );
+      }
     }
   };
   const updateOrders = () => {
@@ -65,12 +71,7 @@ export default function (props: any) {
       setActiceOrders(activeOrders);
     });
   };
-  const sendOrderOut = (params: object) => {
-    ActiveOrdersSevice.sendOrderOut(params).then(() => updateOrders());
-  };
-  const deliverOrder = (params: object) => {
-    ActiveOrdersSevice.deliverOrder(params).then(() => updateOrders());
-  };
+
   useEffect(() => {
     if (setNavigationData) {
       setNavigationData({ currentPath: currentPath });
@@ -80,34 +81,24 @@ export default function (props: any) {
 
   return (
     <React.Fragment>
-      <h2 className={"content-block"}>{"Siparişler"}</h2>
+      <h2 className={"content-block"}>{"Orders"}</h2>
       <TabPanel>
-        <Item title="Aktif Siparişler">
+        <Item title="Active Oeders">
           <div>
             <DataGrid
               keyExpr="Musteri._id"
               showBorders
-              rowAlternationEnabled
               showColumnLines
               dataSource={activeOrders?.Siparis}
-              columnAutoWidth
             >
               <Column
                 dataField={"Musteri._id"}
                 visible={false}
                 formItem={{ visible: false }}
               ></Column>
-              <Column
-                dataField={"Baslik.odeme_yontem_aciklama"}
-                caption={"Platform"}
-              ></Column>
               <Column dataField={"Musteri.adi"} caption={"Müşteri"}></Column>
               <Column dataField={"SiparisAdres.il"} caption={"Adres"}></Column>
-              <Column
-                dataField={"Baslik.toplam_tutar"}
-                caption={"Tutar"}
-                format="currency"
-              ></Column>
+
               <Column
                 dataField={"Baslik.sip_tarih"}
                 caption={"Sipariş Tarihi"}
@@ -117,25 +108,18 @@ export default function (props: any) {
                 caption={"Durum"}
               ></Column>
               <Column
-                dataField={"Baslik.odeme_yontem_aciklama"}
-                caption={"Ödeme Yöntemi"}
-              ></Column>
-              <Column
-                dataField={"Baslik.odeme_yontem_aciklama"}
-                caption={"Kurye"}
-              ></Column>
-              <Column
-                type="buttons"
                 caption="Durum"
                 cellRender={buttonColumnRender}
                 minWidth={250}
+                type="buttons"
+                width={400}
               ></Column>
               <Column type="buttons" caption={"İşlemler"} width={200}>
                 <Button cssClass="process-button">
-                  <FontAwesomeIcon icon={faCircleInfo} size="lg" /> Detay
+                  <FontAwesomeIcon icon={faCircleInfo} size="lg" /> Info
                 </Button>
                 <Button cssClass="process-button">
-                  <FontAwesomeIcon icon={faPrint} size="lg" /> Yazdır
+                  <FontAwesomeIcon icon={faPrint} size="lg" /> Print
                 </Button>
               </Column>
               <Pager
@@ -171,8 +155,8 @@ export default function (props: any) {
               <Column dataField={"name"} caption={"Ödeme Yöntemi"}></Column>
               <Column dataField={"name"} caption={"Kurye"}></Column>
               <Column type="buttons" caption="Durum">
-                <Button text="iptal et" cssClass="cancel-button" />
-                <Button text="Kabul et" cssClass="accept-button" />
+                <Button text="cancel" cssClass="cancel-button" />
+                <Button text="acceot" cssClass="accept-button" />
               </Column>
               <Column type="buttons" caption={"İşlemler"}>
                 <Button cssClass="process-button">

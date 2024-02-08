@@ -3,7 +3,7 @@ import appInfo from "./app-info";
 import routes from "./app-routes";
 import { SideNavOuterToolbar as SideNavBarLayout } from "./layouts";
 import { Footer } from "./components";
-import { ActiveOrders, Bolgeler, Masa } from "./pages";
+import { ActiveOrders, Regions, Table } from "./pages";
 
 export default function Content() {
   return (
@@ -13,11 +13,8 @@ export default function Content() {
           <Route key={path} path={path} element={element} />
         ))}
         <Route path="*" element={<Navigate to="/home" />} />
-        <Route
-          path="/bolgeler"
-          element={<Bolgeler currentPath={"/bolgeler"} />}
-        />
-        <Route path="/masa" element={<Masa currentPath={"/masa"} />} />
+        <Route path="/regions" element={<Regions currentPath={"/regions"} />} />
+        <Route path="/table" element={<Table currentPath={"/table"} />} />
         <Route
           path="/active_orders"
           element={<ActiveOrders currentPath={"/active_orders"} />}

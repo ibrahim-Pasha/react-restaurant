@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import "./masa.scss";
+import "./table.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faGift,
@@ -16,10 +16,10 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 import { useNavigation } from "../../contexts/navigation";
 import { Category, Product, ReqData, StokExtraList } from "../../models";
-import { Masa as masaModel } from "../../models";
+import { Table as masaModel } from "../../models";
 import {
   CategoriesService,
-  MasaService,
+  TableService,
   ProductsService,
   SearchService,
   StokExtraListService,
@@ -34,7 +34,7 @@ import {
   TableHeader,
 } from "../../components";
 
-export default function Masa(props: any) {
+export default function Table(props: any) {
   const { setNavigationData } = useNavigation();
   const navigate = useNavigate();
   const { currentPath } = props;
@@ -532,7 +532,7 @@ export default function Masa(props: any) {
     if (m_kodu == null) {
       navigate("/bolgeler");
     }
-    const Masalar$ = MasaService.getAll({ bolumno: bolumNo });
+    const tables$ = TableService.getAll({ bolumno: bolumNo });
     const Categories$ = CategoriesService.getAll();
     const Products$ = ProductsService.getAll({ grupKodu: grupKodu });
     const Serched$ = SearchService.getAll({ searchText: searchText });
@@ -543,20 +543,20 @@ export default function Masa(props: any) {
       });
     }
     Promise.all([
-      Masalar$,
+      tables$,
       Categories$,
       Products$,
       Serched$,
       stokExtraList$,
     ]).then((results) => {
-      const masa = results[0].Data.find(
-        (masa: masaModel) => masa.m_kodu === m_kodu
+      const table = results[0].Data.find(
+        (table: masaModel) => table.m_kodu === m_kodu
       );
       const categories = results[1].Data;
       const Products = results[2].Data;
       const filteredProducts = results[3].Data;
       const stokExtraList = results[4]?.Data;
-      setTables(masa);
+      setTables(table);
       setCategories(categories);
       setProducts(Products);
       setStokExtraList(stokExtraList);

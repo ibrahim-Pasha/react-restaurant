@@ -5,26 +5,17 @@ export const navigation = [
     icon: "home",
   },
   {
-    text: "Bölgeler",
-    path: "/bolgeler",
+    text: "regions",
+    path: "/regions",
     icon: "home",
   },
   {
-    text: "Aktif Siparişler",
+    text: "Active Orders",
     path: "/active_orders",
   },
   {
-    text: "Examples",
-    icon: "folder",
-    items: [
-      {
-        text: "Profile",
-        path: "/profile",
-      },
-      {
-        text: "Tasks",
-        path: "/tasks",
-      },
-    ],
+    text: "Profile",
+    path: "/profile",
+    icon: "user",
   },
 ];

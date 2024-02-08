@@ -1,4 +1,4 @@
-import { HomePage, ProfilePage, Bolgeler, Masa, ActiveOrders } from "./pages";
+import { HomePage, ProfilePage, Regions, Table, ActiveOrders } from "./pages";
 import { withNavigationWatcher } from "./contexts/navigation";
 
 const routes = [
@@ -11,12 +11,12 @@ const routes = [
     element: HomePage,
   },
   {
-    path: "/bolgeler",
-    element: Bolgeler,
+    path: "/regions",
+    element: Regions,
   },
   {
-    path: "/masa",
-    element: Masa,
+    path: "/table",
+    element: Table,
   },
   {
     path: "/active_orders",
